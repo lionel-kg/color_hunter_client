@@ -97,6 +97,41 @@ export interface DirectMessage {
   sender?: { id: string; pseudo: string };
 }
 
+export interface GridLike {
+  id: string;
+  gridId: string;
+  userId: string;
+  createdAt: string;
+}
+
+export interface GridComment {
+  id: string;
+  gridId: string;
+  userId: string;
+  text: string;
+  createdAt: string;
+  user: { id: string; pseudo: string; avatarUrl?: string | null };
+}
+
+export type NotificationType =
+  | 'FRIEND_REQUEST'
+  | 'FRIEND_ACCEPTED'
+  | 'GRID_LIKE'
+  | 'GRID_COMMENT'
+  | 'GAME_STARTED'
+  | 'DM';
+
+export interface Notification {
+  id: string;
+  userId: string;
+  type: NotificationType;
+  actorId: string | null;
+  entityId: string | null;
+  readAt: string | null;
+  createdAt: string;
+  actor?: { id: string; pseudo: string; avatarUrl?: string | null } | null;
+}
+
 export interface Photo {
   id: string;
   userId: string;

@@ -1,5 +1,10 @@
+import { useEffect } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import { io } from 'socket.io-client';
 import { useAuthStore } from './stores/auth';
+import { useNotificationsStore } from './stores/notifications';
+import { SERVER_URL } from './lib/config';
+import type { Notification } from './types/api';
 import { AuthPage } from './pages/AuthPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { CreateGamePage } from './pages/CreateGamePage';
@@ -18,7 +23,48 @@ function Protected({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
+// Singleton socket partagé dans l'app
+let globalSocket: ReturnType<typeof io> | null = null;
+
+function useGlobalSocket() {
+  const access = useAuthStore(s => s.access);
+  const { addNotification, addUnread, load } = useNotificationsStore();
+
+  useEffect(() => {
+    if (!access) {
+      globalSocket?.disconnect();
+      globalSocket = null;
+      return;
+    }
+
+    globalSocket = io(SERVER_URL, { auth: { token: access }, transports: ['websocket'] });
+
+    globalSocket.on('notification:new', (notif: Notification) => {
+      addNotification(notif);
+    });
+
+    globalSocket.on('dm:message', (msg) => {
+      addUnread(msg);
+    });
+
+    globalSocket.on('friend:request', () => {
+      load();
+    });
+
+    return () => {
+      globalSocket?.disconnect();
+      globalSocket = null;
+    };
+  }, [access]);
+}
+
+export function getSocket() {
+  return globalSocket;
+}
+
 export function App() {
+  useGlobalSocket();
+
   return (
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
