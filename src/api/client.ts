@@ -1,8 +1,8 @@
-import axios, { type AxiosError, type InternalAxiosRequestConfig } from 'axios';
-import { useAuthStore } from '../stores/auth';
+import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
+import { useAuthStore } from "../stores/auth";
 
 export const api = axios.create({
-  baseURL: '/api',
+  baseURL: "http://lionelkg.com:4000/",
   withCredentials: false,
 });
 
@@ -15,9 +15,11 @@ api.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 let refreshing: Promise<string | null> | null = null;
 
 api.interceptors.response.use(
-  res => res,
+  (res) => res,
   async (err: AxiosError) => {
-    const original = err.config as InternalAxiosRequestConfig & { _retry?: boolean };
+    const original = err.config as InternalAxiosRequestConfig & {
+      _retry?: boolean;
+    };
     if (err.response?.status === 401 && !original._retry) {
       original._retry = true;
       try {
@@ -25,10 +27,12 @@ api.interceptors.response.use(
           refreshing = (async () => {
             const refresh = useAuthStore.getState().refresh;
             if (!refresh) return null;
-            const { data } = await axios.post('/api/auth/refresh', { refresh });
+            const { data } = await axios.post("/api/auth/refresh", { refresh });
             useAuthStore.getState().setAccess(data.access);
             return data.access as string;
-          })().finally(() => { refreshing = null; });
+          })().finally(() => {
+            refreshing = null;
+          });
         }
         const newAccess = await refreshing;
         if (newAccess) {
