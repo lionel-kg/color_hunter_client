@@ -30,10 +30,50 @@ export function GridBuilderPage() {
   const [grid, setGrid] = useState<Grid | null>(null);
   const { download, downloading } = useDownload();
 
-  // drag state
+  // drag state (desktop)
   const dragSource = useRef<
     { kind: "pool"; photo: Photo } | { kind: "slot"; index: number } | null
   >(null);
+
+  // tap-to-place state (mobile)
+  const [selected, setSelected] = useState<
+    { kind: "pool"; photo: Photo } | { kind: "slot"; index: number } | null
+  >(null);
+
+  function onTapPool(photo: Photo) {
+    if (selected?.kind === "slot") {
+      // Place la photo sélectionnée depuis un slot vers le pool → retire du slot
+      setSlots((prev) => {
+        const next = [...prev];
+        next[selected.index] = null;
+        return next;
+      });
+      setSelected(null);
+      return;
+    }
+    setSelected({ kind: "pool", photo });
+  }
+
+  function onTapSlot(index: number) {
+    if (!selected) {
+      // Sélectionne la photo dans le slot (si occupé)
+      if (slots[index]) setSelected({ kind: "slot", index });
+      return;
+    }
+    setSlots((prev) => {
+      const next = [...prev];
+      if (selected.kind === "pool") {
+        next[index] = selected.photo;
+      } else {
+        // Swap
+        const tmp = next[index];
+        next[index] = next[selected.index];
+        next[selected.index] = tmp;
+      }
+      return next;
+    });
+    setSelected(null);
+  }
 
   useEffect(() => {
     if (!id) return;
@@ -154,6 +194,13 @@ export function GridBuilderPage() {
               Glisse tes photos dans les 9 cases. Réorganise à volonté.
             </p>
 
+            {/* indication sélection active */}
+            {selected && (
+              <div style={{ fontSize: 12, color: "var(--ch-clay)", marginBottom: 8, textAlign: "center", fontWeight: 600 }}>
+                Photo sélectionnée — tape une case pour la placer
+              </div>
+            )}
+
             {/* 3×3 drop grid */}
             <div
               style={{
@@ -164,73 +211,81 @@ export function GridBuilderPage() {
               }}
               onDragOver={(e) => e.preventDefault()}
             >
-              {slots.map((photo, i) => (
-                <div
-                  key={i}
-                  onDragOver={(e) => e.preventDefault()}
-                  onDrop={() => onDropSlot(i)}
-                  draggable={!!photo}
-                  onDragStart={() => photo && onDragStartSlot(i)}
-                  style={{
-                    aspectRatio: "1",
-                    borderRadius: 10,
-                    border: photo ? "none" : "1.5px dashed var(--ch-line-2)",
-                    background: photo ? "transparent" : "var(--ch-cream-2)",
-                    overflow: "hidden",
-                    position: "relative",
-                    cursor: photo ? "grab" : "default",
-                    transition: "opacity 0.15s",
-                  }}
-                >
-                  {photo ? (
-                    <>
-                      <img
-                        src={photoUrl(photo)}
-                        alt=""
+              {slots.map((photo, i) => {
+                const isSelectedSlot = selected?.kind === "slot" && selected.index === i;
+                return (
+                  <div
+                    key={i}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => onDropSlot(i)}
+                    draggable={!!photo}
+                    onDragStart={() => photo && onDragStartSlot(i)}
+                    onClick={() => onTapSlot(i)}
+                    style={{
+                      aspectRatio: "1",
+                      borderRadius: 10,
+                      border: isSelectedSlot
+                        ? "2.5px solid var(--ch-clay)"
+                        : photo ? "none" : "1.5px dashed var(--ch-line-2)",
+                      background: photo ? "transparent" : "var(--ch-cream-2)",
+                      overflow: "hidden",
+                      position: "relative",
+                      cursor: "pointer",
+                      transition: "box-shadow 0.15s",
+                      boxShadow: isSelectedSlot ? "0 0 0 3px var(--ch-clay-light, #e8c4a8)" : "none",
+                    }}
+                  >
+                    {photo ? (
+                      <>
+                        <img
+                          src={photoUrl(photo)}
+                          alt=""
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                            display: "block",
+                            opacity: isSelectedSlot ? 0.7 : 1,
+                          }}
+                        />
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: 4,
+                            right: 4,
+                            background: "rgba(0,0,0,0.45)",
+                            borderRadius: 6,
+                            width: 18,
+                            height: 18,
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: 10,
+                            color: "#fff",
+                            fontFamily: "var(--ch-mono)",
+                          }}
+                        >
+                          {i + 1}
+                        </div>
+                      </>
+                    ) : (
+                      <div
                         style={{
                           width: "100%",
                           height: "100%",
-                          objectFit: "cover",
-                          display: "block",
-                        }}
-                      />
-                      <div
-                        style={{
-                          position: "absolute",
-                          top: 4,
-                          right: 4,
-                          background: "rgba(0,0,0,0.45)",
-                          borderRadius: 6,
-                          width: 18,
-                          height: 18,
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          fontSize: 10,
-                          color: "#fff",
-                          fontFamily: "var(--ch-mono)",
+                          fontSize: 18,
+                          color: selected ? "var(--ch-clay)" : "var(--ch-line-2)",
                         }}
                       >
-                        {i + 1}
+                        {selected ? "↓" : "+"}
                       </div>
-                    </>
-                  ) : (
-                    <div
-                      style={{
-                        width: "100%",
-                        height: "100%",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: 18,
-                        color: "var(--ch-line-2)",
-                      }}
-                    >
-                      +
-                    </div>
-                  )}
-                </div>
-              ))}
+                    )}
+                  </div>
+                );
+              })}
             </div>
 
             {/* Pool de photos */}
@@ -251,32 +306,35 @@ export function GridBuilderPage() {
                 onDragOver={(e) => e.preventDefault()}
                 onDrop={onDropPool}
               >
-                {poolPhotos.map((photo) => (
-                  <div
-                    key={photo.id}
-                    draggable
-                    onDragStart={() => onDragStartPool(photo)}
-                    style={{
-                      width: 70,
-                      height: 70,
-                      borderRadius: 8,
-                      overflow: "hidden",
-                      cursor: "grab",
-                      flexShrink: 0,
-                      border: "2px solid var(--ch-line)",
-                    }}
-                  >
-                    <img
-                      src={photoUrl(photo)}
-                      alt=""
+                {poolPhotos.map((photo) => {
+                  const isSelectedPhoto = selected?.kind === "pool" && selected.photo.id === photo.id;
+                  return (
+                    <div
+                      key={photo.id}
+                      draggable
+                      onDragStart={() => onDragStartPool(photo)}
+                      onClick={() => onTapPool(photo)}
                       style={{
-                        width: "100%",
-                        height: "100%",
-                        objectFit: "cover",
+                        width: 70,
+                        height: 70,
+                        borderRadius: 8,
+                        overflow: "hidden",
+                        cursor: "pointer",
+                        flexShrink: 0,
+                        border: isSelectedPhoto ? "2.5px solid var(--ch-clay)" : "2px solid var(--ch-line)",
+                        boxShadow: isSelectedPhoto ? "0 0 0 3px var(--ch-clay-light, #e8c4a8)" : "none",
+                        opacity: isSelectedPhoto ? 0.8 : 1,
+                        transition: "box-shadow 0.15s",
                       }}
-                    />
-                  </div>
-                ))}
+                    >
+                      <img
+                        src={photoUrl(photo)}
+                        alt=""
+                        style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                      />
+                    </div>
+                  );
+                })}
                 {poolPhotos.length === 0 && (
                   <div
                     style={{
