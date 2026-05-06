@@ -7,7 +7,7 @@ import { AddFriendButton } from "../components/AddFriendButton";
 import { useDownload } from "../hooks/useDownload";
 import type { Grid } from "../types/api";
 
-const SERVER = "http://localhost:4000";
+const SERVER = "http://lionelkg.com:4000";
 function gridImgUrl(url: string) {
   return url.startsWith("http") ? url : SERVER + url;
 }

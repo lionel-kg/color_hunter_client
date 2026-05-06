@@ -29,11 +29,14 @@ export function GameRoomPage() {
   const prevStatus = useRef<string | null>(null);
 
   const loadFinishedState = (gameId: string) => {
-    api.get<Grid[]>(`/grids/game/${gameId}`).then((r) => {
-      setGameGrids(r.data);
-      const mine = r.data.find((g) => g.userId === me?.id);
-      if (mine) setExistingGrid(mine);
-    }).catch(() => {});
+    api
+      .get<Grid[]>(`/grids/game/${gameId}`)
+      .then((r) => {
+        setGameGrids(r.data);
+        const mine = r.data.find((g) => g.userId === me?.id);
+        if (mine) setExistingGrid(mine);
+      })
+      .catch(() => {});
   };
 
   useEffect(() => {
@@ -45,11 +48,17 @@ export function GameRoomPage() {
         if (r.data.status === "FINISHED") loadFinishedState(id);
         if (r.data.status === "RUNNING" && !revealed) {
           setRevealing(true);
-          setTimeout(() => { setRevealing(false); setRevealed(true); }, SPIN_DURATION_MS);
+          setTimeout(() => {
+            setRevealing(false);
+            setRevealed(true);
+          }, SPIN_DURATION_MS);
         }
       })
       .catch(() => {});
-    api.get<Photo[]>(`/photos/${id}`).then((r) => setPhotos(r.data)).catch(() => {});
+    api
+      .get<Photo[]>(`/photos/${id}`)
+      .then((r) => setPhotos(r.data))
+      .catch(() => {});
   }, [id]);
 
   // Trigger reveal when status transitions to RUNNING (e.g. via polling or socket)
@@ -77,23 +86,31 @@ export function GameRoomPage() {
   // Recharge le jeu quand le compte à rebours local atteint 0
   useEffect(() => {
     if (!countdown.expired || !id || game?.status !== "RUNNING") return;
-    api.get<Game>(`/games/${id}`).then((r) => {
-      setGame(r.data);
-      if (r.data.status === "FINISHED") loadFinishedState(id);
-    }).catch(() => {});
+    api
+      .get<Game>(`/games/${id}`)
+      .then((r) => {
+        setGame(r.data);
+        if (r.data.status === "FINISHED") loadFinishedState(id);
+      })
+      .catch(() => {});
   }, [countdown.expired]);
 
   // Ecoute l'event server game:finished via Socket.io
   useEffect(() => {
     if (!id) return;
-    const socket = socketIO("http://localhost:4000", { auth: { token: useAuthStore.getState().access } });
+    const socket = socketIO("http://lionelkg.com:4000", {
+      auth: { token: useAuthStore.getState().access },
+    });
     socket.emit("game:join", { gameId: id });
     socket.on("game:finished", ({ gameId }: { gameId: string }) => {
       if (gameId !== id) return;
-      api.get<Game>(`/games/${id}`).then((r) => {
-        setGame(r.data);
-        loadFinishedState(id);
-      }).catch(() => {});
+      api
+        .get<Game>(`/games/${id}`)
+        .then((r) => {
+          setGame(r.data);
+          loadFinishedState(id);
+        })
+        .catch(() => {});
     });
     socket.on("game:grid", ({ gameId }: { gameId: string }) => {
       if (gameId !== id) return;
@@ -308,37 +325,78 @@ export function GameRoomPage() {
         {game.status !== "FINISHED" && (
           <div style={{ padding: "20px 20px 0" }}>
             <div className="ch-card" style={{ padding: 16 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
-                <span style={{ fontSize: 13, fontWeight: 500 }}>Ta moisson</span>
-                <span className="ch-mono" style={{ fontSize: 12, color: "var(--ch-ink-soft)" }}>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  marginBottom: 10,
+                }}
+              >
+                <span style={{ fontSize: 13, fontWeight: 500 }}>
+                  Ta moisson
+                </span>
+                <span
+                  className="ch-mono"
+                  style={{ fontSize: 12, color: "var(--ch-ink-soft)" }}
+                >
                   {photos.length} / {quota}
                 </span>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3, 1fr)",
+                  gap: 6,
+                }}
+              >
                 {Array.from({ length: quota }).map((_, i) => {
                   const photo = photos[i];
                   return photo ? (
                     <div key={photo.id} style={{ position: "relative" }}>
                       <img
-                        src={"http://localhost:4000" + photo.cloudinaryUrl}
+                        src={"http://lionelkg.com:4000" + photo.cloudinaryUrl}
                         alt=""
-                        style={{ width: "100%", aspectRatio: "1", objectFit: "cover", borderRadius: 8, display: "block" }}
+                        style={{
+                          width: "100%",
+                          aspectRatio: "1",
+                          objectFit: "cover",
+                          borderRadius: 8,
+                          display: "block",
+                        }}
                       />
                       <button
                         onClick={() => onDelete(photo)}
                         disabled={deleting === photo.id}
                         style={{
-                          position: "absolute", top: 4, right: 4, width: 22, height: 22,
-                          borderRadius: "50%", border: "none", background: "rgba(0,0,0,0.55)",
-                          color: "#fff", cursor: "pointer", display: "flex",
-                          alignItems: "center", justifyContent: "center", padding: 0,
+                          position: "absolute",
+                          top: 4,
+                          right: 4,
+                          width: 22,
+                          height: 22,
+                          borderRadius: "50%",
+                          border: "none",
+                          background: "rgba(0,0,0,0.55)",
+                          color: "#fff",
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          padding: 0,
                         }}
                       >
                         <Icon name="x" size={12} />
                       </button>
                     </div>
                   ) : (
-                    <div key={i} style={{ aspectRatio: 1, borderRadius: 8, border: "1.5px dashed var(--ch-line-2)" }} />
+                    <div
+                      key={i}
+                      style={{
+                        aspectRatio: 1,
+                        borderRadius: 8,
+                        border: "1.5px dashed var(--ch-line-2)",
+                      }}
+                    />
                   );
                 })}
               </div>
@@ -351,12 +409,38 @@ export function GameRoomPage() {
           <div style={{ padding: "20px 20px 0" }}>
             {/* CTA si l'utilisateur n'a pas encore composé sa grille */}
             {!existingGrid && (
-              <div style={{ borderRadius: 18, padding: "24px 18px", marginBottom: 16, background: "linear-gradient(135deg, #C99B7E 0%, #A8755A 100%)", color: "var(--ch-ivory)", textAlign: "center" }}>
-                <div className="ch-serif" style={{ fontSize: 22, marginBottom: 6 }}>La chasse est terminée</div>
-                <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 16 }}>Compose ta grille et sauvegarde-la sur ton profil.</div>
+              <div
+                style={{
+                  borderRadius: 18,
+                  padding: "24px 18px",
+                  marginBottom: 16,
+                  background:
+                    "linear-gradient(135deg, #C99B7E 0%, #A8755A 100%)",
+                  color: "var(--ch-ivory)",
+                  textAlign: "center",
+                }}
+              >
+                <div
+                  className="ch-serif"
+                  style={{ fontSize: 22, marginBottom: 6 }}
+                >
+                  La chasse est terminée
+                </div>
+                <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 16 }}>
+                  Compose ta grille et sauvegarde-la sur ton profil.
+                </div>
                 <Link
                   to={`/games/${id}/grid`}
-                  style={{ display: "inline-block", background: "var(--ch-ivory)", color: "var(--ch-clay-deep)", borderRadius: 999, padding: "10px 24px", fontSize: 13, fontWeight: 600, textDecoration: "none" }}
+                  style={{
+                    display: "inline-block",
+                    background: "var(--ch-ivory)",
+                    color: "var(--ch-clay-deep)",
+                    borderRadius: 999,
+                    padding: "10px 24px",
+                    fontSize: 13,
+                    fontWeight: 600,
+                    textDecoration: "none",
+                  }}
                 >
                   Composer ma grille →
                 </Link>
@@ -365,31 +449,66 @@ export function GameRoomPage() {
 
             {/* Grilles de tous les participants */}
             {gameGrids.length > 0 && (
-              <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              <div
+                style={{ display: "flex", flexDirection: "column", gap: 20 }}
+              >
                 {gameGrids.map((grid) => {
-                  const gridUrl = grid.imageUrl.startsWith("http") ? grid.imageUrl : "http://localhost:4000" + grid.imageUrl;
+                  const gridUrl = grid.imageUrl.startsWith("http")
+                    ? grid.imageUrl
+                    : "http://lionelkg.com:4000" + grid.imageUrl;
                   return (
-                    <div key={grid.id} className="ch-card" style={{ padding: 14 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 10 }}>
-                        <div className="ch-avatar" style={{ width: 28, height: 28, fontSize: 11 }}>
+                    <div
+                      key={grid.id}
+                      className="ch-card"
+                      style={{ padding: 14 }}
+                    >
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: 8,
+                          marginBottom: 10,
+                        }}
+                      >
+                        <div
+                          className="ch-avatar"
+                          style={{ width: 28, height: 28, fontSize: 11 }}
+                        >
                           {grid.user?.pseudo[0]?.toUpperCase()}
                         </div>
                         <span style={{ fontSize: 13, fontWeight: 600 }}>
-                          {grid.user?.pseudo}{grid.userId === me?.id && " (toi)"}
+                          {grid.user?.pseudo}
+                          {grid.userId === me?.id && " (toi)"}
                         </span>
                       </div>
                       <img
                         src={gridUrl}
                         alt={`Grille de ${grid.user?.pseudo}`}
-                        style={{ width: "100%", borderRadius: 10, display: "block", marginBottom: 10 }}
+                        style={{
+                          width: "100%",
+                          borderRadius: 10,
+                          display: "block",
+                          marginBottom: 10,
+                        }}
                       />
                       <button
                         className="ch-btn"
                         disabled={downloading}
-                        onClick={() => download(gridUrl, `grille-${grid.user?.pseudo ?? "joueur"}-color-hunt.jpg`)}
-                        style={{ width: "100%", padding: "10px 0", fontSize: 13, justifyContent: "center" }}
+                        onClick={() =>
+                          download(
+                            gridUrl,
+                            `grille-${grid.user?.pseudo ?? "joueur"}-color-hunt.jpg`,
+                          )
+                        }
+                        style={{
+                          width: "100%",
+                          padding: "10px 0",
+                          fontSize: 13,
+                          justifyContent: "center",
+                        }}
                       >
-                        <Icon name="download" size={14} /> {downloading ? "Téléchargement…" : "Télécharger"}
+                        <Icon name="download" size={14} />{" "}
+                        {downloading ? "Téléchargement…" : "Télécharger"}
                       </button>
                     </div>
                   );
@@ -400,61 +519,65 @@ export function GameRoomPage() {
         )}
 
         {game.status === "RUNNING" && (
-        <div style={{ padding: "14px 20px 0" }}>
-          <div
-            style={{
-              borderRadius: 18,
-              padding: "24px 18px",
-              background: "var(--ch-ivory)",
-              border: "2px dashed var(--ch-clay)",
-              textAlign: "center",
-            }}
-          >
+          <div style={{ padding: "14px 20px 0" }}>
             <div
               style={{
-                width: 48,
-                height: 48,
-                borderRadius: 14,
-                background: "var(--ch-cream-2)",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                marginBottom: 10,
+                borderRadius: 18,
+                padding: "24px 18px",
+                background: "var(--ch-ivory)",
+                border: "2px dashed var(--ch-clay)",
+                textAlign: "center",
               }}
             >
-              <Icon name="camera" size={22} />
+              <div
+                style={{
+                  width: 48,
+                  height: 48,
+                  borderRadius: 14,
+                  background: "var(--ch-cream-2)",
+                  display: "inline-flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  marginBottom: 10,
+                }}
+              >
+                <Icon name="camera" size={22} />
+              </div>
+              <div style={{ fontSize: 14, fontWeight: 500 }}>
+                Capture ou dépose
+              </div>
+              <div
+                style={{
+                  fontSize: 12,
+                  color: "var(--ch-ink-mute)",
+                  marginTop: 4,
+                }}
+              >
+                Les EXIF sont vérifiés automatiquement
+              </div>
+              <input
+                ref={fileInput}
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={onUpload}
+                style={{ display: "none" }}
+              />
+              <button
+                className="ch-btn"
+                disabled={uploading || slots === 0}
+                onClick={() => fileInput.current?.click()}
+                style={{ marginTop: 14, padding: "10px 16px", fontSize: 13 }}
+              >
+                <Icon name="upload" size={14} />{" "}
+                {uploading
+                  ? "Envoi…"
+                  : slots === 0
+                    ? "Quota atteint"
+                    : `Importer${slots > 1 ? ` (${slots} restantes)` : ""}`}
+              </button>
             </div>
-            <div style={{ fontSize: 14, fontWeight: 500 }}>
-              Capture ou dépose
-            </div>
-            <div
-              style={{
-                fontSize: 12,
-                color: "var(--ch-ink-mute)",
-                marginTop: 4,
-              }}
-            >
-              Les EXIF sont vérifiés automatiquement
-            </div>
-            <input
-              ref={fileInput}
-              type="file"
-              accept="image/*"
-              multiple
-              onChange={onUpload}
-              style={{ display: "none" }}
-            />
-            <button
-              className="ch-btn"
-              disabled={uploading || slots === 0}
-              onClick={() => fileInput.current?.click()}
-              style={{ marginTop: 14, padding: "10px 16px", fontSize: 13 }}
-            >
-              <Icon name="upload" size={14} />{" "}
-              {uploading ? "Envoi…" : slots === 0 ? "Quota atteint" : `Importer${slots > 1 ? ` (${slots} restantes)` : ""}`}
-            </button>
           </div>
-        </div>
         )}
       </div>
 
