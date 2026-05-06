@@ -206,7 +206,6 @@ export function GridBuilderPage() {
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
-                gridAutoRows: "calc((100vw - 40px - 12px) / 3 * 2)",
                 gap: 6,
                 marginBottom: 20,
               }}
@@ -223,6 +222,7 @@ export function GridBuilderPage() {
                     onDragStart={() => photo && onDragStartSlot(i)}
                     onClick={() => onTapSlot(i)}
                     style={{
+                      aspectRatio: "1",
                       borderRadius: 10,
                       border: isSelectedSlot
                         ? "2.5px solid var(--ch-clay)"
@@ -407,7 +407,7 @@ export function GridBuilderPage() {
               }}
             >
               {slots.map((photo, i) => (
-                <div key={i} style={{ aspectRatio: "1/2", overflow: "hidden" }}>
+                <div key={i} style={{ aspectRatio: "1", overflow: "hidden" }}>
                   {photo && (
                     <img
                       src={photoUrl(photo)}
@@ -542,7 +542,6 @@ export function GridBuilderPage() {
                 overflow: "hidden",
                 marginBottom: 20,
                 boxShadow: "var(--ch-shadow-lg)",
-                aspectRatio: "1/2",
               }}
             >
               <img
@@ -552,7 +551,7 @@ export function GridBuilderPage() {
                     : SERVER + grid.imageUrl
                 }
                 alt="Grille"
-                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                style={{ width: "100%", display: "block" }}
               />
             </div>
 
