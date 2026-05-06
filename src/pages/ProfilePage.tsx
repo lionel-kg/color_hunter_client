@@ -8,7 +8,8 @@ import { StatusChip } from "../components/StatusChip";
 import { useDownload } from "../hooks/useDownload";
 import type { Friendship, Grid, GridVisibility } from "../types/api";
 
-const SERVER = "http://lionelkg.com:4000";
+import { SERVER_URL } from "../lib/config";
+const SERVER = SERVER_URL;
 function gridImgUrl(url: string) {
   return url.startsWith("http") ? url : SERVER + url;
 }

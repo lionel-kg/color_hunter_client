@@ -5,7 +5,8 @@ import { Icon } from "../components/Icon";
 import { useDownload } from "../hooks/useDownload";
 import type { Game, Grid, GridVisibility, Photo } from "../types/api";
 
-const SERVER = "http://lionelkg.com:4000";
+import { SERVER_URL } from "../lib/config";
+const SERVER = SERVER_URL;
 
 function photoUrl(p: Photo) {
   return p.cloudinaryUrl.startsWith("http")

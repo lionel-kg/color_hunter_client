@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { io as socketIO } from "socket.io-client";
 import { api } from "../api/client";
 import { useAuthStore } from "../stores/auth";
+import { SERVER_URL } from "../lib/config";
 import { ColorWheel } from "../components/ColorWheel";
 import { Icon } from "../components/Icon";
 import { ParticipantsPanel } from "../components/ParticipantsPanel";
@@ -98,7 +99,7 @@ export function GameRoomPage() {
   // Ecoute l'event server game:finished via Socket.io
   useEffect(() => {
     if (!id) return;
-    const socket = socketIO("http://lionelkg.com:4000", {
+    const socket = socketIO(SERVER_URL, {
       auth: { token: useAuthStore.getState().access },
     });
     socket.emit("game:join", { gameId: id });
@@ -355,7 +356,7 @@ export function GameRoomPage() {
                   return photo ? (
                     <div key={photo.id} style={{ position: "relative" }}>
                       <img
-                        src={"http://lionelkg.com:4000" + photo.cloudinaryUrl}
+                        src={SERVER_URL + photo.cloudinaryUrl}
                         alt=""
                         style={{
                           width: "100%",
@@ -455,7 +456,7 @@ export function GameRoomPage() {
                 {gameGrids.map((grid) => {
                   const gridUrl = grid.imageUrl.startsWith("http")
                     ? grid.imageUrl
-                    : "http://lionelkg.com:4000" + grid.imageUrl;
+                    : SERVER_URL + grid.imageUrl;
                   return (
                     <div
                       key={grid.id}

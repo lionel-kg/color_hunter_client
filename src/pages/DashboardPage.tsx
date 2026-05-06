@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { io as socketIO } from "socket.io-client";
 import { api } from "../api/client";
 import { useAuthStore } from "../stores/auth";
+import { SERVER_URL } from "../lib/config";
 import { useNotificationsStore } from "../stores/notifications";
 import type { Friendship, Game } from "../types/api";
 import { TabBar } from "../components/TabBar";
@@ -73,7 +74,7 @@ export function DashboardPage() {
   const socketRef = useRef<ReturnType<typeof socketIO> | null>(null);
   useEffect(() => {
     if (!user) return;
-    const socket = socketIO("http://lionelkg.com:4000", {
+    const socket = socketIO(SERVER_URL, {
       auth: { token: useAuthStore.getState().access },
     });
     socketRef.current = socket;

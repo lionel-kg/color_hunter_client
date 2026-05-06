@@ -1,8 +1,9 @@
 import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { useAuthStore } from "../stores/auth";
+import { SERVER_URL } from "../lib/config";
 
 export const api = axios.create({
-  baseURL: "http://lionelkg.com:4000/api",
+  baseURL: `${SERVER_URL}/api`,
   withCredentials: false,
 });
 
