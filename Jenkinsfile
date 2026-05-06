@@ -6,7 +6,7 @@ pipeline {
         IMAGE_NAME = "color-hunter_client"
         CONTAINER_NAME = "color-hunter-client"
         // On définit le port interne de ton API (ex: 4000)
-        APP_PORT = "4100" 
+        APP_PORT = "5173" 
     }
 
     stages {
