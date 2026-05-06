@@ -407,7 +407,7 @@ export function GridBuilderPage() {
               }}
             >
               {slots.map((photo, i) => (
-                <div key={i} style={{ aspectRatio: "1", overflow: "hidden" }}>
+                <div key={i} style={{ aspectRatio: "1/2", overflow: "hidden" }}>
                   {photo && (
                     <img
                       src={photoUrl(photo)}
@@ -542,6 +542,7 @@ export function GridBuilderPage() {
                 overflow: "hidden",
                 marginBottom: 20,
                 boxShadow: "var(--ch-shadow-lg)",
+                aspectRatio: "1/2",
               }}
             >
               <img
@@ -551,7 +552,7 @@ export function GridBuilderPage() {
                     : SERVER + grid.imageUrl
                 }
                 alt="Grille"
-                style={{ width: "100%", display: "block" }}
+                style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
               />
             </div>
 

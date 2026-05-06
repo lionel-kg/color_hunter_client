@@ -206,11 +206,13 @@ export function ProfilePage() {
                   className="ch-card"
                   style={{ padding: 0, overflow: "hidden" }}
                 >
-                  <img
-                    src={gridImgUrl(grid.imageUrl)}
-                    alt="Grille"
-                    style={{ width: "100%", display: "block" }}
-                  />
+                  <div style={{ aspectRatio: "1/2", overflow: "hidden" }}>
+                    <img
+                      src={gridImgUrl(grid.imageUrl)}
+                      alt="Grille"
+                      style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+                    />
+                  </div>
                   <div
                     style={{
                       padding: "10px 14px",
