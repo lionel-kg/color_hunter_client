@@ -9,6 +9,7 @@ import type { DirectMessage, Friendship, Game } from "../types/api";
 import { TabBar } from "../components/TabBar";
 import { Logo } from "../components/Logo";
 import { Icon } from "../components/Icon";
+import { NotificationBell } from "../components/NotificationBell";
 import { useCountdown } from "../hooks/useCountdown";
 
 function GameCountdown({ expiresAt }: { expiresAt: string | null }) {
@@ -142,43 +143,7 @@ export function DashboardPage() {
         <header className="ch-topbar">
           <Logo size={15} />
           <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <button
-              onClick={() => setShowNotifs((v) => !v)}
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "var(--ch-ink-soft)",
-                position: "relative",
-                padding: 0,
-                display: "flex",
-              }}
-            >
-              <Icon name="bell" size={20} />
-              {(pendingRequests.length + unreadMessages.length) > 0 && (
-                <span
-                  style={{
-                    position: "absolute",
-                    top: -4,
-                    right: -4,
-                    minWidth: 16,
-                    height: 16,
-                    borderRadius: 999,
-                    background: "var(--ch-danger, #e05a5a)",
-                    color: "#fff",
-                    fontSize: 9,
-                    fontWeight: 700,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    padding: "0 3px",
-                    lineHeight: 1,
-                  }}
-                >
-                  {(pendingRequests.length + unreadMessages.length) > 9 ? "9+" : pendingRequests.length + unreadMessages.length}
-                </span>
-              )}
-            </button>
+            <NotificationBell />
             <Link
               to="/profile"
               className="ch-avatar"

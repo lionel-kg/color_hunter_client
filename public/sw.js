@@ -48,3 +48,32 @@ self.addEventListener('fetch', (e) => {
     );
   }
 });
+
+// ─── PUSH NOTIFICATIONS ───────────────────────────────────────────────
+self.addEventListener('push', (e) => {
+  if (!e.data) return;
+  let payload = { title: 'Color Hunt', body: '', icon: '/icons/icon-192.png', url: '/' };
+  try { payload = { ...payload, ...e.data.json() }; } catch {}
+
+  e.waitUntil(
+    self.registration.showNotification(payload.title, {
+      body: payload.body,
+      icon: payload.icon,
+      badge: '/icons/icon-192.png',
+      data: { url: payload.url },
+      vibrate: [100, 50, 100],
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (e) => {
+  e.notification.close();
+  const url = e.notification.data?.url ?? '/';
+  e.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(list => {
+      const existing = list.find(c => c.url.includes(self.location.origin));
+      if (existing) return existing.focus().then(c => c.navigate(url));
+      return clients.openWindow(url);
+    })
+  );
+});

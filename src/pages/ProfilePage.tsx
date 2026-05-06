@@ -5,6 +5,7 @@ import { useAuthStore } from "../stores/auth";
 import { Icon } from "../components/Icon";
 import { TabBar } from "../components/TabBar";
 import { StatusChip } from "../components/StatusChip";
+import { GridCard } from "../components/GridCard";
 import { useDownload } from "../hooks/useDownload";
 import type { Friendship, Grid, GridVisibility } from "../types/api";
 
@@ -201,79 +202,31 @@ export function ProfilePage() {
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {grids.map((grid) => (
-                <div
-                  key={grid.id}
-                  className="ch-card"
-                  style={{ padding: 0, overflow: "hidden" }}
-                >
-                  <img
-                    src={gridImgUrl(grid.imageUrl)}
-                    alt="Grille"
-                    style={{ width: "100%", display: "block" }}
+                <div key={grid.id}>
+                  <GridCard
+                    grid={{ ...grid, imageUrl: gridImgUrl(grid.imageUrl), user: { id: user!.id, pseudo: user!.pseudo, avatarUrl: user?.avatarUrl } }}
+                    currentUserId={user?.id}
                   />
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "space-between",
-                      gap: 10,
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontSize: 12, fontWeight: 500 }}>
-                        {grid.game?.inviteCode ?? "—"} ·{" "}
-                        {grid.game?.mode === "TEAM" ? "Équipe" : "Solo"}
-                      </div>
-                      <div
-                        style={{ fontSize: 11, color: "var(--ch-ink-mute)" }}
-                      >
-                        {new Date(grid.createdAt).toLocaleDateString("fr-FR", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </div>
+                  {/* Actions propriétaire : visibilité + téléchargement */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "8px 12px 0" }}>
+                    <div style={{ fontSize: 11, color: "var(--ch-ink-mute)" }}>
+                      {grid.game?.inviteCode ?? "—"} · {grid.game?.mode === "TEAM" ? "Équipe" : "Solo"} ·{" "}
+                      {new Date(grid.createdAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}
                     </div>
-                    <div
-                      style={{ display: "flex", alignItems: "center", gap: 8 }}
-                    >
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                       <button
                         onClick={() => toggleVisibility(grid)}
                         disabled={updatingId === grid.id}
                         className="ch-pill"
-                        style={{
-                          cursor: "pointer",
-                          border: "none",
-                          background: "var(--ch-cream-2)",
-                          fontSize: 11,
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 4,
-                        }}
+                        style={{ cursor: "pointer", border: "none", background: "var(--ch-cream-2)", fontSize: 11, display: "flex", alignItems: "center", gap: 4 }}
                       >
-                        <Icon
-                          name={grid.visibility === "PUBLIC" ? "globe" : "lock"}
-                          size={11}
-                        />
+                        <Icon name={grid.visibility === "PUBLIC" ? "globe" : "lock"} size={11} />
                         {grid.visibility === "PUBLIC" ? "Publique" : "Privée"}
                       </button>
                       <button
-                        onClick={() =>
-                          download(
-                            gridImgUrl(grid.imageUrl),
-                            "grille-color-hunt.jpg",
-                          )
-                        }
+                        onClick={() => download(gridImgUrl(grid.imageUrl), "grille-color-hunt.jpg")}
                         disabled={downloading}
-                        style={{
-                          background: "none",
-                          border: "none",
-                          cursor: "pointer",
-                          color: "var(--ch-ink-mute)",
-                          display: "flex",
-                          padding: 4,
-                        }}
+                        style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ch-ink-mute)", display: "flex", padding: 4 }}
                       >
                         <Icon name="download" size={16} />
                       </button>

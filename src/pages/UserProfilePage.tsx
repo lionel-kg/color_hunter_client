@@ -4,7 +4,7 @@ import { api } from "../api/client";
 import { useAuthStore } from "../stores/auth";
 import { Icon } from "../components/Icon";
 import { AddFriendButton } from "../components/AddFriendButton";
-import { useDownload } from "../hooks/useDownload";
+import { GridCard } from "../components/GridCard";
 import type { Grid } from "../types/api";
 
 import { SERVER_URL } from "../lib/config";
@@ -29,8 +29,6 @@ export function UserProfilePage() {
   const me = useAuthStore((s) => s.user);
   const [profile, setProfile] = useState<PublicProfile | null>(null);
   const [loading, setLoading] = useState(true);
-  const { download, downloading } = useDownload();
-
   useEffect(() => {
     if (!userId) return;
     api
@@ -144,91 +142,11 @@ export function UserProfilePage() {
             </h3>
             <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
               {profile.grids.map((grid) => (
-                <div
+                <GridCard
                   key={grid.id}
-                  className="ch-card"
-                  style={{ padding: 0, overflow: "hidden" }}
-                >
-                  <div style={{ position: "relative" }}>
-                    <img
-                      src={gridImgUrl(grid.imageUrl)}
-                      alt="Grille"
-                      style={{ width: "100%", display: "block" }}
-                    />
-                  </div>
-                  <div
-                    style={{
-                      padding: "10px 14px",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <div
-                      style={{
-                        width: "100%",
-                        display: "flex",
-                        flexDirection: "row",
-                        gap: 4,
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: "100%",
-                          display: "flex",
-                          flexDirection: "column",
-                          justifyContent: "space-between",
-                        }}
-                      >
-                        <div style={{ fontSize: 12, fontWeight: 500 }}>
-                          {grid.game?.inviteCode ?? "—"} ·{" "}
-                          {grid.game?.mode === "TEAM" ? "Équipe" : "Solo"}
-                        </div>
-                        <div
-                          style={{ fontSize: 11, color: "var(--ch-ink-mute)" }}
-                        >
-                          {new Date(grid.createdAt).toLocaleDateString(
-                            "fr-FR",
-                            {
-                              day: "numeric",
-                              month: "long",
-                              year: "numeric",
-                            },
-                          )}
-                        </div>
-                      </div>
-
-                      {grid.visibility === "PUBLIC" && (
-                        <button
-                          onClick={() =>
-                            download(
-                              gridImgUrl(grid.imageUrl),
-                              `grille-${grid.id}.jpg`,
-                            )
-                          }
-                          disabled={downloading}
-                          style={{
-                            background: "rgba(255,255,255,0.88)",
-                            border: "none",
-                            borderRadius: 8,
-                            padding: "6px 10px",
-                            cursor: downloading ? "wait" : "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: 5,
-                            fontSize: 12,
-                            fontWeight: 500,
-                            color: "var(--ch-ink)",
-                            boxShadow: "0 1px 6px rgba(0,0,0,0.12)",
-                          }}
-                        >
-                          <Icon name="download" size={15} />
-                          Télécharger
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </div>
+                  grid={{ ...grid, imageUrl: gridImgUrl(grid.imageUrl), user: { id: profile.id, pseudo: profile.pseudo, avatarUrl: profile.avatarUrl } }}
+                  currentUserId={me?.id}
+                />
               ))}
             </div>
           </div>
