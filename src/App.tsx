@@ -10,6 +10,7 @@ import { ProfilePage } from './pages/ProfilePage';
 import { SettingsPage } from './pages/SettingsPage';
 import { SocialPage } from './pages/SocialPage';
 import { UserProfilePage } from './pages/UserProfilePage';
+import { ChatPage } from './pages/ChatPage';
 
 function Protected({ children }: { children: React.ReactNode }) {
   const access = useAuthStore(s => s.access);
@@ -30,6 +31,7 @@ export function App() {
       <Route path="/settings" element={<Protected><SettingsPage /></Protected>} />
       <Route path="/social" element={<Protected><SocialPage /></Protected>} />
       <Route path="/users/:userId" element={<Protected><UserProfilePage /></Protected>} />
+      <Route path="/chat/:friendId" element={<Protected><ChatPage /></Protected>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

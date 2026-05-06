@@ -206,6 +206,7 @@ export function GridBuilderPage() {
               style={{
                 display: "grid",
                 gridTemplateColumns: "repeat(3, 1fr)",
+                gridAutoRows: "calc((100vw - 40px - 12px) / 3 * 2)",
                 gap: 6,
                 marginBottom: 20,
               }}
@@ -222,7 +223,6 @@ export function GridBuilderPage() {
                     onDragStart={() => photo && onDragStartSlot(i)}
                     onClick={() => onTapSlot(i)}
                     style={{
-                      aspectRatio: "1",
                       borderRadius: 10,
                       border: isSelectedSlot
                         ? "2.5px solid var(--ch-clay)"

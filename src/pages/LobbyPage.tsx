@@ -15,32 +15,26 @@ export function LobbyPage() {
   const [starting, setStarting] = useState(false);
   const navigate = useNavigate();
 
+  // Chargement initial + temps réel via socket
   useEffect(() => {
     if (!id) return;
-    let cancelled = false;
-    const load = () =>
-      api
-        .get<Game>(`/games/${id}`)
-        .then((r) => {
-          if (!cancelled) setGame(r.data);
-        })
-        .catch(() => {});
-    load();
-    const t = setInterval(load, 4000);
-    return () => {
-      cancelled = true;
-      clearInterval(t);
-    };
-  }, [id]);
 
-  // Navigation temps réel quand la partie démarre
-  useEffect(() => {
-    if (!id) return;
+    api.get<Game>(`/games/${id}`).then((r) => setGame(r.data)).catch(() => {});
+
     const socket = socketIO(SERVER_URL, {
       auth: { token: useAuthStore.getState().access },
     });
     socket.emit("game:join", { gameId: id });
-    socket.on("game:started", () => navigate(`/games/${id}`));
+
+    // Nouveau participant → mettre à jour la liste
+    socket.on("game:joined", (updatedGame: Game) => setGame(updatedGame));
+
+    // Démarrage → naviguer vers la partie
+    socket.on("game:started", (updatedGame: Game) => {
+      setGame(updatedGame);
+      navigate(`/games/${id}`);
+    });
+
     return () => {
       socket.emit("game:leave", { gameId: id });
       socket.disconnect();

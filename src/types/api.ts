@@ -87,6 +87,16 @@ export interface Friendship {
   receiver?: { id: string; pseudo: string; avatarUrl?: string | null };
 }
 
+export interface DirectMessage {
+  id: string;
+  senderId: string;
+  receiverId: string;
+  text: string;
+  readAt: string | null;
+  createdAt: string;
+  sender?: { id: string; pseudo: string };
+}
+
 export interface Photo {
   id: string;
   userId: string;
