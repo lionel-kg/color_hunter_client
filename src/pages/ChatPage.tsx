@@ -3,6 +3,7 @@ import { Link, useParams } from 'react-router-dom';
 import { io as socketIO, Socket } from 'socket.io-client';
 import { api } from '../api/client';
 import { useAuthStore } from '../stores/auth';
+import { useNotificationsStore } from '../stores/notifications';
 import { Icon } from '../components/Icon';
 import { SERVER_URL } from '../lib/config';
 import type { DirectMessage } from '../types/api';
@@ -12,6 +13,7 @@ interface FriendInfo { id: string; pseudo: string; }
 export function ChatPage() {
   const { friendId } = useParams<{ friendId: string }>();
   const me = useAuthStore(s => s.user);
+  const clearUnread = useNotificationsStore(s => s.clearUnread);
   const [friend, setFriend] = useState<FriendInfo | null>(null);
   const [messages, setMessages] = useState<DirectMessage[]>([]);
   const [text, setText] = useState('');
@@ -28,6 +30,7 @@ export function ChatPage() {
     api.get<DirectMessage[]>(`/messages/${friendId}`)
       .then(r => setMessages(r.data))
       .catch(() => {});
+    clearUnread(friendId);
   }, [friendId]);
 
   // Socket

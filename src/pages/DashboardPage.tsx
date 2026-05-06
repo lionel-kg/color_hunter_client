@@ -5,7 +5,7 @@ import { api } from "../api/client";
 import { useAuthStore } from "../stores/auth";
 import { SERVER_URL } from "../lib/config";
 import { useNotificationsStore } from "../stores/notifications";
-import type { Friendship, Game } from "../types/api";
+import type { DirectMessage, Friendship, Game } from "../types/api";
 import { TabBar } from "../components/TabBar";
 import { Logo } from "../components/Logo";
 import { Icon } from "../components/Icon";
@@ -57,9 +57,12 @@ export function DashboardPage() {
 
   const {
     pendingRequests,
+    unreadMessages,
     load: loadNotifs,
     add: addNotif,
     remove: removeNotif,
+    addUnread,
+    clearUnread,
   } = useNotificationsStore();
 
   useEffect(() => {
@@ -79,6 +82,9 @@ export function DashboardPage() {
     });
     socketRef.current = socket;
     socket.on("friend:request", (f: Friendship) => addNotif(f));
+    socket.on("dm:message", (msg: DirectMessage) => {
+      if (msg.senderId !== user?.id) addUnread(msg);
+    });
     return () => {
       socket.disconnect();
       socketRef.current = null;
@@ -149,7 +155,7 @@ export function DashboardPage() {
               }}
             >
               <Icon name="bell" size={20} />
-              {pendingRequests.length > 0 && (
+              {(pendingRequests.length + unreadMessages.length) > 0 && (
                 <span
                   style={{
                     position: "absolute",
@@ -169,7 +175,7 @@ export function DashboardPage() {
                     lineHeight: 1,
                   }}
                 >
-                  {pendingRequests.length > 9 ? "9+" : pendingRequests.length}
+                  {(pendingRequests.length + unreadMessages.length) > 9 ? "9+" : pendingRequests.length + unreadMessages.length}
                 </span>
               )}
             </button>
@@ -457,7 +463,7 @@ export function DashboardPage() {
               </button>
             </div>
 
-            {pendingRequests.length === 0 ? (
+            {pendingRequests.length === 0 && unreadMessages.length === 0 ? (
               <div
                 style={{
                   fontSize: 13,
@@ -472,6 +478,38 @@ export function DashboardPage() {
               <div
                 style={{ display: "flex", flexDirection: "column", gap: 10 }}
               >
+                {unreadMessages.map((entry) => (
+                  <div
+                    key={entry.senderId}
+                    onClick={() => { clearUnread(entry.senderId); navigate(`/chat/${entry.senderId}`); setShowNotifs(false); }}
+                    style={{
+                      display: "flex", alignItems: "center", gap: 10,
+                      padding: "10px 12px",
+                      background: "var(--ch-ivory)",
+                      borderRadius: 14,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <div className="ch-avatar" style={{ width: 36, height: 36, flexShrink: 0 }}>
+                      {entry.pseudo[0]?.toUpperCase()}
+                    </div>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontSize: 13, fontWeight: 600 }}>{entry.pseudo}</div>
+                      <div style={{ fontSize: 11, color: "var(--ch-ink-mute)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                        {entry.lastText}
+                      </div>
+                    </div>
+                    <span style={{
+                      minWidth: 18, height: 18, borderRadius: 999,
+                      background: "var(--ch-clay)", color: "#fff",
+                      fontSize: 10, fontWeight: 700,
+                      display: "flex", alignItems: "center", justifyContent: "center",
+                      padding: "0 4px", flexShrink: 0,
+                    }}>
+                      {entry.count}
+                    </span>
+                  </div>
+                ))}
                 {pendingRequests.map((f) => (
                   <div
                     key={f.id}
