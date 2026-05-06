@@ -3,8 +3,8 @@ pipeline {
 
     environment {
         // Nom de l'image et du conteneur
-        IMAGE_NAME = "translation_client"
-        CONTAINER_NAME = "translation-client"
+        IMAGE_NAME = "color-hunter_client"
+        CONTAINER_NAME = "color-hunter-client"
         // On définit le port interne de ton API (ex: 4000)
         APP_PORT = "4100" 
     }
@@ -30,7 +30,7 @@ pipeline {
                     sh """
                         docker run -d \
                         --name ${CONTAINER_NAME} \
-                        --network translation-network \
+                        --network color-hunter-network \
                         -p ${APP_PORT}:${APP_PORT} \
                         --restart unless-stopped \
                         ${IMAGE_NAME}:latest
