@@ -2,7 +2,7 @@ import axios, { type AxiosError, type InternalAxiosRequestConfig } from "axios";
 import { useAuthStore } from "../stores/auth";
 
 export const api = axios.create({
-  baseURL: "http://lionelkg.com:4000/",
+  baseURL: "http://lionelkg.com:4000/api",
   withCredentials: false,
 });
 
