@@ -7,7 +7,7 @@ RUN npm install
 COPY . .
 ARG VITE_API_URL=http://lionelkg.com:4000
 ENV VITE_API_URL=$VITE_API_URL
-RUN npm run build
+
 
 FROM nginx:alpine
 COPY --from=builder /app/dist /usr/share/nginx/html
