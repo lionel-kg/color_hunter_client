@@ -5,9 +5,11 @@ import type { Grid, GridComment } from '../types/api';
 interface Props {
   grid: Grid;
   currentUserId?: string;
+  ownerActions?: React.ReactNode;
+  metaInfo?: React.ReactNode;
 }
 
-export function GridCard({ grid, currentUserId }: Props) {
+export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [comments, setComments] = useState<GridComment[]>([]);
@@ -73,6 +75,7 @@ export function GridCard({ grid, currentUserId }: Props) {
             }
           </div>
           <span style={styles.pseudo}>{grid.user.pseudo}</span>
+          {ownerActions && <div style={{ marginLeft: 'auto' }}>{ownerActions}</div>}
         </div>
       )}
 
@@ -89,6 +92,7 @@ export function GridCard({ grid, currentUserId }: Props) {
           <span style={{ fontSize: 16 }}>💬</span>
           <span style={styles.count}>{comments.length || ''}</span>
         </button>
+        {metaInfo && <div style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}>{metaInfo}</div>}
       </div>
 
       {/* Commentaires */}
