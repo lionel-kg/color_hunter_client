@@ -1,18 +1,17 @@
-FROM node:24-alpine AS builder
+FROM node:24-alpine 
 WORKDIR /app
 
-COPY package.json ./
+COPY package.json  ./
 RUN npm install
 
 COPY . .
 ARG VITE_API_URL=http://lionelkg.com:4000
 ENV VITE_API_URL=$VITE_API_URL
+ENV NODE_ENV=production
+ENV PORT=5173
+ENV HOSTNAME=0.0.0.0
 
-
-FROM nginx:alpine
-COPY --from=builder /app/dist /usr/share/nginx/html
-COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 EXPOSE 5173
 
-CMD ["nginx", "-g", "daemon off;"]
+CMD ["npm", "run", "start"]
