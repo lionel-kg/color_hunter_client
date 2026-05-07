@@ -5,7 +5,7 @@ type IconName =
   | 'bell' | 'arrowRight' | 'arrowLeft' | 'chevronRight' | 'chevronDown' | 'chevronUp'
   | 'upload' | 'image' | 'users' | 'clock' | 'eye' | 'eyeOff' | 'check' | 'x'
   | 'download' | 'share' | 'heart' | 'lock' | 'globe' | 'sparkle' | 'palette'
-  | 'copy' | 'search' | 'flash';
+  | 'copy' | 'search' | 'flash' | 'comment' | 'feed';
 
 interface Props {
   name: IconName;
@@ -46,6 +46,8 @@ const PATHS: Record<IconName, JSX.Element> = {
   copy: <><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V5a1 1 0 0 1 1-1h10"/></>,
   search: <><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></>,
   flash: <path d="M13 2L4 14h7l-1 8 9-12h-7z"/>,
+  comment: <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>,
+  feed: <><path d="M4 6h16M4 12h16M4 18h10"/></>,
 };
 
 export function Icon({ name, size = 20, stroke = 1.6, color = 'currentColor' }: Props) {

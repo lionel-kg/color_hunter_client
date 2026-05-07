@@ -16,6 +16,7 @@ import { SettingsPage } from './pages/SettingsPage';
 import { SocialPage } from './pages/SocialPage';
 import { UserProfilePage } from './pages/UserProfilePage';
 import { ChatPage } from './pages/ChatPage';
+import { FeedPage } from './pages/FeedPage';
 
 function Protected({ children }: { children: React.ReactNode }) {
   const access = useAuthStore(s => s.access);
@@ -75,6 +76,7 @@ export function App() {
       <Route path="/games/:id" element={<Protected><GameRoomPage /></Protected>} />
       <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />
       <Route path="/settings" element={<Protected><SettingsPage /></Protected>} />
+      <Route path="/feed" element={<Protected><FeedPage /></Protected>} />
       <Route path="/social" element={<Protected><SocialPage /></Protected>} />
       <Route path="/users/:userId" element={<Protected><UserProfilePage /></Protected>} />
       <Route path="/chat/:friendId" element={<Protected><ChatPage /></Protected>} />

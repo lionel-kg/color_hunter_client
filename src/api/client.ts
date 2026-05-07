@@ -28,7 +28,7 @@ api.interceptors.response.use(
           refreshing = (async () => {
             const refresh = useAuthStore.getState().refresh;
             if (!refresh) return null;
-            const { data } = await axios.post("/api/auth/refresh", { refresh });
+            const { data } = await axios.post(`${SERVER_URL}/api/auth/refresh`, { refresh });
             useAuthStore.getState().setAccess(data.access);
             return data.access as string;
           })().finally(() => {
