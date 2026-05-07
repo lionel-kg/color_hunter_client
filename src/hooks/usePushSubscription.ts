@@ -37,7 +37,7 @@ export function usePushSubscription() {
 
     // Récupérer la clé VAPID publique
     const { data } = await api.get<{ publicKey: string }>('/push/vapid-public');
-    const applicationServerKey = urlBase64ToUint8Array(data.publicKey);
+    const applicationServerKey = urlBase64ToUint8Array(data.publicKey).buffer as ArrayBuffer;
 
     // S'abonner via le service worker
     const reg = await navigator.serviceWorker.ready;
