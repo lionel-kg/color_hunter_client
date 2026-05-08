@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuthStore } from '../stores/auth';
 import { GridCard } from '../components/GridCard';
@@ -9,6 +10,7 @@ type FeedGrid = Grid & { _count: { comments: number; likes: number } };
 
 export function FeedPage() {
   const me = useAuthStore(s => s.user);
+  const { t } = useTranslation();
   const [grids, setGrids] = useState<FeedGrid[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -35,7 +37,6 @@ export function FeedPage() {
     }
   }, [cursor, loading, friendsOnly]);
 
-  // Chargement initial + reset au changement de filtre
   useEffect(() => {
     setCursor(null);
     setHasMore(true);
@@ -43,28 +44,29 @@ export function FeedPage() {
     load(true, friendsOnly);
   }, [friendsOnly]);
 
-  // Infinite scroll via IntersectionObserver
   useEffect(() => {
     if (!loaderRef.current) return;
     const observer = new IntersectionObserver(entries => {
-      if (entries[0].isIntersecting && hasMore && !loading) {
-        load(false, friendsOnly);
-      }
+      if (entries[0].isIntersecting && hasMore && !loading) load(false, friendsOnly);
     }, { threshold: 0.1 });
     observer.observe(loaderRef.current);
     return () => observer.disconnect();
   }, [hasMore, loading, load, friendsOnly]);
 
+  const filters = [
+    { label: t('feed.all'), value: false },
+    { label: t('feed.friends'), value: true },
+  ];
+
   return (
     <div className="ch-screen ch-app" style={{ minHeight: '100vh' }}>
       <div className="ch-scroll" style={{ paddingBottom: 100 }}>
-        <header className="ch-topbar">
-          <span className="ch-serif" style={{ fontSize: 20 }}>Feed</span>
-        </header>
+        <div style={{ padding: '14px 20px 6px' }}>
+          <span className="ch-serif" style={{ fontSize: 20 }}>{t('feed.title')}</span>
+        </div>
 
-        {/* Filtre Tous / Amis */}
         <div style={{ padding: '4px 20px 12px', display: 'flex', gap: 6 }}>
-          {[{ label: 'Tous', value: false }, { label: 'Amis', value: true }].map(opt => (
+          {filters.map(opt => (
             <button
               key={opt.label}
               onClick={() => setFriendsOnly(opt.value)}
@@ -81,34 +83,26 @@ export function FeedPage() {
           ))}
         </div>
 
-        {/* Liste des grilles */}
         <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
-          {grids.map(g => (
-            <GridCard key={g.id} grid={g} currentUserId={me?.id} />
-          ))}
+          {grids.map(g => <GridCard key={g.id} grid={g} currentUserId={me?.id} />)}
         </div>
 
-        {/* Sentinel infinite scroll */}
         <div ref={loaderRef} style={{ padding: '24px 0', display: 'flex', justifyContent: 'center' }}>
           {loading && (
             <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
               {[0, 1, 2].map(i => (
-                <div key={i} style={{
-                  width: 6, height: 6, borderRadius: '50%',
-                  background: 'var(--ch-ink-mute)',
-                  opacity: 0.35 + i * 0.2,
-                }} />
+                <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ch-ink-mute)', opacity: 0.35 + i * 0.2 }} />
               ))}
             </div>
           )}
           {!hasMore && grids.length > 0 && (
             <span style={{ fontSize: 12, color: 'var(--ch-ink-mute)', fontFamily: 'var(--ch-sans)' }}>
-              Plus rien à charger
+              {t('feed.loadMore')}
             </span>
           )}
           {!loading && grids.length === 0 && (
             <div className="ch-card" style={{ padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--ch-ink-mute)', margin: '0 16px' }}>
-              {friendsOnly ? 'Tes amis n\'ont pas encore partagé de grilles publiques.' : 'Aucune grille publique pour l\'instant.'}
+              {friendsOnly ? t('feed.emptyFriends') : t('feed.emptyAll')}
             </div>
           )}
         </div>

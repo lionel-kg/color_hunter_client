@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { io as socketIO, Socket } from 'socket.io-client';
 import { api } from '../api/client';
 import { useAuthStore } from '../stores/auth';
@@ -20,8 +21,8 @@ export function ChatPage() {
   const socketRef = useRef<Socket | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+  const { t, i18n } = useTranslation();
 
-  // Charger profil ami + historique
   useEffect(() => {
     if (!friendId) return;
     api.get<{ id: string; pseudo: string }>(`/users/${friendId}/profile`)
@@ -33,11 +34,8 @@ export function ChatPage() {
     clearUnread(friendId);
   }, [friendId]);
 
-  // Socket
   useEffect(() => {
-    const socket = socketIO(SERVER_URL, {
-      auth: { token: useAuthStore.getState().access },
-    });
+    const socket = socketIO(SERVER_URL, { auth: { token: useAuthStore.getState().access } });
     socketRef.current = socket;
     socket.on('dm:message', (msg: DirectMessage) => {
       if (
@@ -53,7 +51,6 @@ export function ChatPage() {
     return () => { socket.disconnect(); };
   }, [friendId, me?.id]);
 
-  // Scroll en bas à chaque nouveau message
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
@@ -67,15 +64,13 @@ export function ChatPage() {
   }
 
   function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      send();
-    }
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
   }
+
+  const locale = i18n.language.startsWith('fr') ? 'fr-FR' : 'en-US';
 
   return (
     <div className="ch-screen ch-app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Header */}
       <header className="ch-topbar" style={{ flexShrink: 0 }}>
         <Link to="/social" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
           <Icon name="arrowLeft" size={22} />
@@ -89,11 +84,10 @@ export function ChatPage() {
         <div />
       </header>
 
-      {/* Messages */}
       <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
         {messages.length === 0 && (
           <div style={{ textAlign: 'center', color: 'var(--ch-ink-mute)', fontSize: 13, marginTop: 40 }}>
-            Début de la conversation avec {friend?.pseudo}
+            {t('chat.startConversation', { pseudo: friend?.pseudo })}
           </div>
         )}
         {messages.map(msg => {
@@ -101,23 +95,15 @@ export function ChatPage() {
           return (
             <div key={msg.id} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
               <div style={{
-                maxWidth: '75%',
-                padding: '8px 12px',
+                maxWidth: '75%', padding: '8px 12px',
                 borderRadius: isMe ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
                 background: isMe ? 'var(--ch-ink)' : 'var(--ch-cream-2)',
                 color: isMe ? 'var(--ch-ivory)' : 'var(--ch-ink)',
-                fontSize: 14,
-                lineHeight: 1.45,
-                wordBreak: 'break-word',
+                fontSize: 14, lineHeight: 1.45, wordBreak: 'break-word',
               }}>
                 {msg.text}
-                <div style={{
-                  fontSize: 10,
-                  marginTop: 4,
-                  opacity: 0.55,
-                  textAlign: 'right',
-                }}>
-                  {new Date(msg.createdAt).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                <div style={{ fontSize: 10, marginTop: 4, opacity: 0.55, textAlign: 'right' }}>
+                  {new Date(msg.createdAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
             </div>
@@ -126,53 +112,20 @@ export function ChatPage() {
         <div ref={bottomRef} />
       </div>
 
-      {/* Input */}
-      <div style={{
-        flexShrink: 0,
-        padding: '10px 12px',
-        borderTop: '1px solid var(--ch-line)',
-        background: 'var(--ch-ivory)',
-        display: 'flex',
-        gap: 8,
-        alignItems: 'flex-end',
-      }}>
+      <div style={{ flexShrink: 0, padding: '10px 12px', borderTop: '1px solid var(--ch-line)', background: 'var(--ch-ivory)', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
         <textarea
           ref={inputRef}
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={onKeyDown}
-          placeholder="Message…"
+          placeholder={t('chat.messagePlaceholder')}
           rows={1}
-          style={{
-            flex: 1,
-            resize: 'none',
-            border: '1.5px solid var(--ch-line)',
-            borderRadius: 12,
-            padding: '9px 12px',
-            fontSize: 14,
-            fontFamily: 'var(--ch-sans)',
-            background: 'var(--ch-cream-2)',
-            color: 'var(--ch-ink)',
-            outline: 'none',
-            lineHeight: 1.4,
-            maxHeight: 120,
-            overflowY: 'auto',
-          }}
+          style={{ flex: 1, resize: 'none', border: '1.5px solid var(--ch-line)', borderRadius: 12, padding: '9px 12px', fontSize: 14, fontFamily: 'var(--ch-sans)', background: 'var(--ch-cream-2)', color: 'var(--ch-ink)', outline: 'none', lineHeight: 1.4, maxHeight: 120, overflowY: 'auto' }}
         />
         <button
           onClick={send}
           disabled={!text.trim()}
-          style={{
-            width: 40, height: 40,
-            borderRadius: 12,
-            border: 'none',
-            background: text.trim() ? 'var(--ch-ink)' : 'var(--ch-line)',
-            color: 'var(--ch-ivory)',
-            cursor: text.trim() ? 'pointer' : 'default',
-            display: 'flex', alignItems: 'center', justifyContent: 'center',
-            flexShrink: 0,
-            transition: 'background 0.15s',
-          }}
+          style={{ width: 40, height: 40, borderRadius: 12, border: 'none', background: text.trim() ? 'var(--ch-ink)' : 'var(--ch-line)', color: 'var(--ch-ivory)', cursor: text.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.15s' }}
         >
           <Icon name="arrowRight" size={18} />
         </button>

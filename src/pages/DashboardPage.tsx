@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { io as socketIO } from "socket.io-client";
 import { api } from "../api/client";
 import { useAuthStore } from "../stores/auth";
@@ -7,9 +8,7 @@ import { SERVER_URL } from "../lib/config";
 import { useNotificationsStore } from "../stores/notifications";
 import type { DirectMessage, Friendship, Game } from "../types/api";
 import { TabBar } from "../components/TabBar";
-import { Logo } from "../components/Logo";
 import { Icon } from "../components/Icon";
-import { NotificationBell } from "../components/NotificationBell";
 import { useCountdown } from "../hooks/useCountdown";
 
 function GameCountdown({ expiresAt }: { expiresAt: string | null }) {
@@ -55,6 +54,7 @@ export function DashboardPage() {
   const [joinError, setJoinError] = useState<string | null>(null);
   const [showNotifs, setShowNotifs] = useState(false);
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
 
   const {
     pendingRequests,
@@ -131,7 +131,8 @@ export function DashboardPage() {
     }
   };
 
-  const today = new Date().toLocaleDateString("fr-FR", {
+  const locale = i18n.language.startsWith('fr') ? 'fr-FR' : 'en-US';
+  const today = new Date().toLocaleDateString(locale, {
     weekday: "long",
     day: "numeric",
     month: "long",
@@ -140,19 +141,7 @@ export function DashboardPage() {
   return (
     <div className="ch-screen ch-app" style={{ minHeight: "100vh" }}>
       <div className="ch-scroll" style={{ paddingBottom: 100 }}>
-        <header className="ch-topbar">
-          <Logo size={15} />
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <NotificationBell />
-            <Link
-              to="/profile"
-              className="ch-avatar"
-              style={{ width: 30, height: 30, textDecoration: "none" }}
-            >
-              {user?.pseudo[0]?.toUpperCase() ?? "?"}
-            </Link>
-          </div>
-        </header>
+
 
         <div style={{ padding: "12px 20px 4px" }}>
           <div className="ch-eyebrow" style={{ marginBottom: 6 }}>
@@ -167,11 +156,8 @@ export function DashboardPage() {
               letterSpacing: "-0.02em",
             }}
           >
-            Bonjour {user?.pseudo ?? ""},<br />
-            <em style={{ fontStyle: "italic", color: "var(--ch-clay-deep)" }}>
-              une chasse
-            </em>{" "}
-            t'attend.
+            {t('dashboard.hello', { pseudo: user?.pseudo ?? '' })}<br />
+            {t('dashboard.huntAwaits')}
           </h1>
         </div>
 
@@ -210,8 +196,8 @@ export function DashboardPage() {
                     }}
                   >
                     {featured.status === "RUNNING"
-                      ? "● En direct"
-                      : "○ En attente"}
+                      ? t('dashboard.live')
+                      : t('dashboard.waiting')}
                   </span>
                   <span
                     className="ch-mono"
@@ -224,16 +210,16 @@ export function DashboardPage() {
                   className="ch-serif"
                   style={{ fontSize: 30, lineHeight: 1.05 }}
                 >
-                  {featured.status === "RUNNING" ? "Chasse en cours" : "Salon"}
+                  {featured.status === "RUNNING" ? t('dashboard.huntRunning') : t('dashboard.lobby')}
                 </div>
                 <div
                   className="ch-mono"
                   style={{ fontSize: 11, opacity: 0.7, marginTop: 4 }}
                 >
                   {featured.mode === "TEAM"
-                    ? `Équipe · ${featured.teamSize}`
-                    : "Solo"}{" "}
-                  · {featured.maxPlayers} joueurs max
+                    ? `${t('dashboard.team')} · ${featured.teamSize}`
+                    : t('dashboard.solo')}{" "}
+                  · {featured.maxPlayers} {t('dashboard.maxPlayers')}
                 </div>
                 {featured.status === "RUNNING" && (
                   <FeaturedCountdown expiresAt={featured.expiresAt} />
@@ -267,10 +253,10 @@ export function DashboardPage() {
             <Icon name="plus" size={22} stroke={1.8} />
             <div style={{ textAlign: "left" }}>
               <div style={{ fontSize: 14, fontWeight: 500 }}>
-                Créer une chasse
+                {t('dashboard.createHunt')}
               </div>
               <div style={{ fontSize: 11, opacity: 0.6, fontWeight: 400 }}>
-                Solo ou en équipe
+                {t('dashboard.soloOrTeam')}
               </div>
             </div>
           </Link>
@@ -286,7 +272,7 @@ export function DashboardPage() {
             }}
           >
             <div style={{ fontSize: 11, color: "var(--ch-ink-mute)" }}>
-              Rejoindre · code
+              {t('dashboard.joinCode')}
             </div>
             <input
               value={joinCode}
@@ -321,14 +307,14 @@ export function DashboardPage() {
               letterSpacing: "-0.01em",
             }}
           >
-            Tes chasses
+            {t('dashboard.myHunts')}
           </h3>
           {games.length === 0 && (
             <div
               className="ch-card"
               style={{ padding: 16, fontSize: 13, color: "var(--ch-ink-mute)" }}
             >
-              Aucune chasse pour l'instant. Lance-toi !
+              {t('dashboard.noHunts')}
             </div>
           )}
           {games.map((g) => (
@@ -357,7 +343,7 @@ export function DashboardPage() {
               />
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ fontSize: 13, fontWeight: 500 }}>
-                  {g.inviteCode} · {g.mode === "TEAM" ? "Équipe" : "Solo"}
+                  {g.inviteCode} · {g.mode === "TEAM" ? t('dashboard.team') : t('dashboard.solo')}
                 </div>
                 <div
                   style={{
@@ -413,7 +399,7 @@ export function DashboardPage() {
               }}
             >
               <span style={{ fontSize: 15, fontWeight: 700 }}>
-                Notifications
+                {t('dashboard.notifications')}
               </span>
               <button
                 onClick={() => setShowNotifs(false)}
@@ -437,7 +423,7 @@ export function DashboardPage() {
                   padding: "24px 0",
                 }}
               >
-                Aucune notification
+                {t('dashboard.noNotifications')}
               </div>
             ) : (
               <div
@@ -500,7 +486,7 @@ export function DashboardPage() {
                       <div
                         style={{ fontSize: 11, color: "var(--ch-ink-mute)" }}
                       >
-                        veut t'ajouter en ami
+                        {t('dashboard.wantsToAdd')}
                       </div>
                     </div>
                     <div style={{ display: "flex", gap: 6, flexShrink: 0 }}>
@@ -518,7 +504,7 @@ export function DashboardPage() {
                           cursor: "pointer",
                         }}
                       >
-                        Accepter
+                        {t('dashboard.accept')}
                       </button>
                       <button
                         onClick={() => declineRequest(f)}
@@ -534,7 +520,7 @@ export function DashboardPage() {
                           cursor: "pointer",
                         }}
                       >
-                        Refuser
+                        {t('dashboard.decline')}
                       </button>
                     </div>
                   </div>

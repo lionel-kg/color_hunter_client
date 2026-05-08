@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuthStore } from '../stores/auth';
 import { useNotificationsStore } from '../stores/notifications';
@@ -14,6 +15,7 @@ export function SocialPage() {
   const [loading, setLoading] = useState(true);
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
   const { pendingRequests, remove: removeNotif } = useNotificationsStore();
+  const { t } = useTranslation();
 
   const load = () => {
     api.get<Friendship[]>('/users/friends')
@@ -58,8 +60,8 @@ export function SocialPage() {
   return (
     <div className="ch-screen ch-app" style={{ minHeight: '100vh' }}>
       <div className="ch-scroll" style={{ paddingBottom: 100 }}>
-        <header className="ch-topbar">
-          <span className="ch-serif" style={{ fontSize: 20 }}>Amis</span>
+        <div style={{ padding: '14px 20px 6px', display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span className="ch-serif" style={{ fontSize: 20 }}>{t('social.friends')}</span>
           {pendingRequests.length > 0 && (
             <span style={{
               display: 'inline-flex', alignItems: 'center', gap: 5,
@@ -68,15 +70,15 @@ export function SocialPage() {
               fontSize: 11, fontWeight: 700,
             }}>
               <Icon name="bell" size={12} />
-              {pendingRequests.length} demande{pendingRequests.length > 1 ? 's' : ''}
+              {pendingRequests.length} {pendingRequests.length > 1 ? t('social.requests_plural') : t('social.requests')}
             </span>
           )}
-        </header>
+        </div>
 
         {/* Demandes reçues */}
         {pendingRequests.length > 0 && (
           <div style={{ padding: '16px 20px 0' }}>
-            <div className="ch-eyebrow" style={{ marginBottom: 10 }}>DEMANDES REÇUES</div>
+            <div className="ch-eyebrow" style={{ marginBottom: 10 }}>{t('social.receivedRequests')}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {pendingRequests.map(f => (
                 <div key={f.id} className="ch-card" style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -89,20 +91,14 @@ export function SocialPage() {
                     <Link to={`/users/${f.sender?.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
                       <div style={{ fontSize: 13, fontWeight: 600 }}>{f.sender?.pseudo}</div>
                     </Link>
-                    <div style={{ fontSize: 11, color: 'var(--ch-ink-mute)' }}>veut t'ajouter en ami</div>
+                    <div style={{ fontSize: 11, color: 'var(--ch-ink-mute)' }}>{t('social.wantsToAdd')}</div>
                   </div>
                   <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                    <button
-                      onClick={() => acceptRequest(f)}
-                      style={actionBtn('var(--ch-clay)', '#fff')}
-                    >
-                      Accepter
+                    <button onClick={() => acceptRequest(f)} style={actionBtn('var(--ch-clay)', '#fff')}>
+                      {t('social.accept')}
                     </button>
-                    <button
-                      onClick={() => declineRequest(f)}
-                      style={actionBtn('var(--ch-cream-2)', 'var(--ch-ink)')}
-                    >
-                      Refuser
+                    <button onClick={() => declineRequest(f)} style={actionBtn('var(--ch-cream-2)', 'var(--ch-ink)')}>
+                      {t('social.decline')}
                     </button>
                   </div>
                 </div>
@@ -114,15 +110,15 @@ export function SocialPage() {
         {/* Amis acceptés */}
         <div style={{ padding: '20px 20px 0' }}>
           <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
-            <div className="ch-eyebrow">MES AMIS</div>
+            <div className="ch-eyebrow">{t('social.myFriends')}</div>
             <span style={{ fontSize: 12, color: 'var(--ch-ink-mute)' }}>{accepted.length}</span>
           </div>
           {loading ? (
-            <div style={{ fontSize: 13, color: 'var(--ch-ink-mute)', padding: '16px 0' }}>Chargement…</div>
+            <div style={{ fontSize: 13, color: 'var(--ch-ink-mute)', padding: '16px 0' }}>{t('social.loading')}</div>
           ) : accepted.length === 0 ? (
             <div className="ch-card" style={{ padding: 20, textAlign: 'center', fontSize: 13, color: 'var(--ch-ink-mute)' }}>
-              Aucun ami pour l'instant.<br />
-              <span style={{ fontSize: 12 }}>Rejoins une chasse et ajoute des chasseurs !</span>
+              {t('social.noFriends')}<br />
+              <span style={{ fontSize: 12 }}>{t('social.noFriendsHint')}</span>
             </div>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -145,28 +141,28 @@ export function SocialPage() {
                         onClick={() => navigate(`/chat/${friend?.id}`)}
                         style={{ background: 'var(--ch-clay)', border: 'none', borderRadius: 999, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}
                       >
-                        <Icon name="arrowRight" size={12} /> Message
+                        <Icon name="arrowRight" size={12} /> {t('social.message')}
                       </button>
                       <Link
                         to={`/users/${friend?.id}`}
                         style={{ background: 'var(--ch-cream-2)', border: 'none', borderRadius: 999, padding: '5px 10px', fontSize: 11, fontWeight: 600, textDecoration: 'none', color: 'var(--ch-ink)', display: 'inline-flex', alignItems: 'center', gap: 4 }}
                       >
-                        <Icon name="user" size={12} /> Profil
+                        <Icon name="user" size={12} /> {t('social.profile')}
                       </Link>
                       {confirmRemoveId === f.id ? (
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{ fontSize: 11, color: 'var(--ch-ink-mute)' }}>Retirer ?</span>
+                          <span style={{ fontSize: 11, color: 'var(--ch-ink-mute)' }}>{t('social.remove')}</span>
                           <button
                             onClick={() => removeFriend(f)}
                             style={{ background: 'var(--ch-danger, #e05a5a)', border: 'none', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, color: '#fff', cursor: 'pointer' }}
                           >
-                            Oui
+                            {t('social.yes')}
                           </button>
                           <button
                             onClick={() => setConfirmRemoveId(null)}
                             style={{ background: 'var(--ch-cream-2)', border: 'none', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, color: 'var(--ch-ink)', cursor: 'pointer' }}
                           >
-                            Non
+                            {t('social.no')}
                           </button>
                         </div>
                       ) : (
@@ -189,7 +185,7 @@ export function SocialPage() {
         {/* Demandes envoyées */}
         {sentPending.length > 0 && (
           <div style={{ padding: '20px 20px 0' }}>
-            <div className="ch-eyebrow" style={{ marginBottom: 10 }}>DEMANDES ENVOYÉES</div>
+            <div className="ch-eyebrow" style={{ marginBottom: 10 }}>{t('social.sentRequests')}</div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {sentPending.map(f => (
                 <div key={f.id} className="ch-card" style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -198,7 +194,7 @@ export function SocialPage() {
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div style={{ fontSize: 13, fontWeight: 600 }}>{f.receiver?.pseudo}</div>
-                    <div style={{ fontSize: 11, color: 'var(--ch-ink-mute)', fontStyle: 'italic' }}>En attente…</div>
+                    <div style={{ fontSize: 11, color: 'var(--ch-ink-mute)', fontStyle: 'italic' }}>{t('social.pending')}</div>
                   </div>
                   <button
                     onClick={() => removeFriend(f)}

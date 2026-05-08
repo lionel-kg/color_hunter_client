@@ -17,6 +17,7 @@ import { SocialPage } from './pages/SocialPage';
 import { UserProfilePage } from './pages/UserProfilePage';
 import { ChatPage } from './pages/ChatPage';
 import { FeedPage } from './pages/FeedPage';
+import { AppShell } from './components/AppShell';
 
 function Protected({ children }: { children: React.ReactNode }) {
   const access = useAuthStore(s => s.access);
@@ -69,16 +70,18 @@ export function App() {
   return (
     <Routes>
       <Route path="/auth" element={<AuthPage />} />
-      <Route path="/" element={<Protected><DashboardPage /></Protected>} />
-      <Route path="/games/new" element={<Protected><CreateGamePage /></Protected>} />
+      {/* Pages avec topbar globale (cloche + avatar) */}
+      <Route path="/" element={<Protected><AppShell><DashboardPage /></AppShell></Protected>} />
+      <Route path="/games/new" element={<Protected><AppShell><CreateGamePage /></AppShell></Protected>} />
+      <Route path="/feed" element={<Protected><AppShell><FeedPage /></AppShell></Protected>} />
+      <Route path="/social" element={<Protected><AppShell><SocialPage /></AppShell></Protected>} />
+      <Route path="/profile" element={<Protected><AppShell><ProfilePage /></AppShell></Protected>} />
+      <Route path="/settings" element={<Protected><AppShell><SettingsPage /></AppShell></Protected>} />
+      <Route path="/users/:userId" element={<Protected><AppShell><UserProfilePage /></AppShell></Protected>} />
+      {/* Pages avec header contextuel propre */}
       <Route path="/games/:id/lobby" element={<Protected><LobbyPage /></Protected>} />
       <Route path="/games/:id/grid" element={<Protected><GridBuilderPage /></Protected>} />
       <Route path="/games/:id" element={<Protected><GameRoomPage /></Protected>} />
-      <Route path="/profile" element={<Protected><ProfilePage /></Protected>} />
-      <Route path="/settings" element={<Protected><SettingsPage /></Protected>} />
-      <Route path="/feed" element={<Protected><FeedPage /></Protected>} />
-      <Route path="/social" element={<Protected><SocialPage /></Protected>} />
-      <Route path="/users/:userId" element={<Protected><UserProfilePage /></Protected>} />
       <Route path="/chat/:friendId" element={<Protected><ChatPage /></Protected>} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

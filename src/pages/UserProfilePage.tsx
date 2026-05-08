@@ -45,14 +45,14 @@ export function UserProfilePage() {
   return (
     <div className="ch-screen ch-app" style={{ minHeight: "100vh" }}>
       <div className="ch-scroll" style={{ paddingBottom: 40 }}>
-        <header className="ch-topbar">
+        <div style={{ padding: '10px 20px' }}>
           <Link
             to="/social"
             style={{ background: "none", border: "none", cursor: "pointer" }}
           >
             <Icon name="arrowLeft" size={22} />
           </Link>
-        </header>
+        </div>
 
         {/* Avatar + infos */}
         <div style={{ padding: "12px 24px 0", textAlign: "center" }}>

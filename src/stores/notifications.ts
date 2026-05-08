@@ -22,6 +22,7 @@ interface NotificationsState {
   loadNotifications: () => Promise<void>;
   markAllRead: () => Promise<void>;
   markRead: (id: string) => Promise<void>;
+  deleteNotification: (id: string) => Promise<void>;
   addNotification: (n: Notification) => void;
 
   // Amis
@@ -80,6 +81,19 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
           n.id === id ? { ...n, readAt: new Date().toISOString() } : n,
         ),
         unreadCount: Math.max(0, s.unreadCount - 1),
+      }));
+    } catch {
+      // ignore
+    }
+  },
+
+  deleteNotification: async (id) => {
+    try {
+      const notif = get().notifications.find(n => n.id === id);
+      await api.delete(`/notifications/${id}`);
+      set(s => ({
+        notifications: s.notifications.filter(n => n.id !== id),
+        unreadCount: notif && !notif.readAt ? Math.max(0, s.unreadCount - 1) : s.unreadCount,
       }));
     } catch {
       // ignore
