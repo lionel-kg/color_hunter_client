@@ -1,0 +1,33 @@
+// AddFriendButton
+
+.add-friend-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-family: var(--ch-sans);
+  font-weight: 600;
+  background: var(--ch-cream-2);
+  border: none;
+  border-radius: var(--ch-r-pill);
+  cursor: pointer;
+  color: var(--ch-ink);
+
+  &--clay { background: var(--ch-clay); color: #fff; }
+
+  &__already-friends {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--ch-sage-deep);
+    font-weight: 600;
+  }
+
+  &__pending {
+    font-size: 11px;
+    color: var(--ch-ink-mute);
+    font-style: italic;
+  }
+}

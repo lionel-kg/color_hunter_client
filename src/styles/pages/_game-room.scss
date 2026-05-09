@@ -1,0 +1,240 @@
+// GameRoomPage
+
+.game-room {
+  &__reveal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: var(--ch-cream);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+
+  &__reveal-label { letter-spacing: 0.12em; }
+
+  &__reveal-sub {
+    font-size: 14px;
+    color: var(--ch-ink-mute);
+  }
+
+  &__topbar-back {
+    background: var(--ch-ivory);
+    border: 1px solid var(--ch-line);
+    border-radius: var(--ch-r-pill);
+    padding: 8px;
+    cursor: pointer;
+  }
+
+  &__topbar-participants {
+    background: var(--ch-ivory);
+    border: 1px solid var(--ch-line);
+    border-radius: var(--ch-r-pill);
+    padding: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+  }
+
+  &__topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__countdown {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+
+    &--urgent { color: var(--ch-danger); }
+    &--mute   { color: var(--ch-ink-mute); }
+  }
+
+  &__end-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: var(--ch-sans);
+    font-weight: 600;
+    background: var(--ch-danger);
+    color: #fff;
+    border: none;
+    border-radius: var(--ch-r-pill);
+    cursor: pointer;
+    transition: opacity 0.15s;
+
+    &--loading { opacity: 0.6; }
+  }
+
+  &__color-section {
+    padding: 20px 24px 0;
+    text-align: center;
+  }
+
+  &__color-wheel { display: flex; justify-content: center; margin-bottom: 16px; }
+
+  // Harvest section
+  &__harvest { padding: 20px 20px 0; }
+
+  &__harvest-card { padding: 16px; }
+
+  &__harvest-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  &__harvest-title { font-size: 13px; font-weight: 500; }
+
+  &__harvest-count {
+    font-size: 12px;
+    color: var(--ch-ink-soft);
+  }
+
+  &__harvest-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  &__harvest-photo {
+    position: relative;
+  }
+
+  &__harvest-img {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: 8px;
+    display: block;
+  }
+
+  &__harvest-delete {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+  }
+
+  &__harvest-empty-slot {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 1.5px dashed var(--ch-line-2);
+  }
+
+  // Upload CTA
+  &__upload-cta { padding: 14px 20px 0; }
+
+  &__upload-card {
+    border-radius: 18px;
+    padding: 24px 18px;
+    background: var(--ch-ivory);
+    border: 2px dashed var(--ch-clay);
+    text-align: center;
+  }
+
+  &__upload-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    background: var(--ch-cream-2);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+  }
+
+  &__upload-title { font-size: 14px; font-weight: 500; }
+
+  &__upload-sub {
+    font-size: 12px;
+    color: var(--ch-ink-mute);
+    margin-top: 4px;
+  }
+
+  &__upload-btn {
+    margin-top: 14px;
+    padding: 10px 16px;
+    font-size: 13px;
+  }
+
+  // Résultats (FINISHED)
+  &__results { padding: 20px 20px 0; }
+
+  &__results-cta {
+    border-radius: 18px;
+    padding: 24px 18px;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #C99B7E 0%, #A8755A 100%);
+    color: var(--ch-ivory);
+    text-align: center;
+  }
+
+  &__results-cta-title {
+    font-size: 22px;
+    margin-bottom: 6px;
+  }
+
+  &__results-cta-sub {
+    font-size: 13px;
+    opacity: 0.85;
+    margin-bottom: 16px;
+  }
+
+  &__results-cta-link {
+    display: inline-block;
+    background: var(--ch-ivory);
+    color: var(--ch-clay-deep);
+    border-radius: var(--ch-r-pill);
+    padding: 10px 24px;
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  &__grids-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  &__grid-result { padding: 14px; }
+
+  &__grid-result-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  &__grid-result-pseudo {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  &__grid-result-img {
+    width: 100%;
+    border-radius: 10px;
+    display: block;
+    margin-bottom: 10px;
+  }
+
+  &__download-btn {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 13px;
+    justify-content: center;
+  }
+}

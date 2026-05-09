@@ -70,39 +70,33 @@ export function ChatPage() {
   const locale = i18n.language.startsWith('fr') ? 'fr-FR' : 'en-US';
 
   return (
-    <div className="ch-screen ch-app" style={{ minHeight: '100vh', display: 'flex', flexDirection: 'column' }}>
-      <header className="ch-topbar" style={{ flexShrink: 0 }}>
-        <Link to="/social" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+    <div className="ch-screen ch-app chat-page">
+      <header className="ch-topbar chat-page__header">
+        <Link to="/social" className="chat-page__back-btn">
           <Icon name="arrowLeft" size={22} />
         </Link>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <div className="ch-avatar" style={{ width: 32, height: 32, fontSize: 14 }}>
+        <div className="chat-page__friend-info">
+          <div className="ch-avatar chat-page__friend-avatar">
             {friend?.pseudo[0]?.toUpperCase()}
           </div>
-          <span style={{ fontSize: 15, fontWeight: 600 }}>{friend?.pseudo ?? '…'}</span>
+          <span className="chat-page__friend-name">{friend?.pseudo ?? '…'}</span>
         </div>
         <div />
       </header>
 
-      <div style={{ flex: 1, overflowY: 'auto', padding: '12px 16px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+      <div className="chat-page__messages">
         {messages.length === 0 && (
-          <div style={{ textAlign: 'center', color: 'var(--ch-ink-mute)', fontSize: 13, marginTop: 40 }}>
+          <div className="chat-page__empty-state">
             {t('chat.startConversation', { pseudo: friend?.pseudo })}
           </div>
         )}
         {messages.map(msg => {
           const isMe = msg.senderId === me?.id;
           return (
-            <div key={msg.id} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
-              <div style={{
-                maxWidth: '75%', padding: '8px 12px',
-                borderRadius: isMe ? '16px 16px 4px 16px' : '16px 16px 16px 4px',
-                background: isMe ? 'var(--ch-ink)' : 'var(--ch-cream-2)',
-                color: isMe ? 'var(--ch-ivory)' : 'var(--ch-ink)',
-                fontSize: 14, lineHeight: 1.45, wordBreak: 'break-word',
-              }}>
+            <div key={msg.id} className={`chat-page__message-row chat-page__message-row--${isMe ? 'mine' : 'theirs'}`}>
+              <div className={`chat-page__bubble chat-page__bubble--${isMe ? 'mine' : 'theirs'}`}>
                 {msg.text}
-                <div style={{ fontSize: 10, marginTop: 4, opacity: 0.55, textAlign: 'right' }}>
+                <div className="chat-page__bubble-time">
                   {new Date(msg.createdAt).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })}
                 </div>
               </div>
@@ -112,7 +106,7 @@ export function ChatPage() {
         <div ref={bottomRef} />
       </div>
 
-      <div style={{ flexShrink: 0, padding: '10px 12px', borderTop: '1px solid var(--ch-line)', background: 'var(--ch-ivory)', display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+      <div className="chat-page__input-bar">
         <textarea
           ref={inputRef}
           value={text}
@@ -120,12 +114,12 @@ export function ChatPage() {
           onKeyDown={onKeyDown}
           placeholder={t('chat.messagePlaceholder')}
           rows={1}
-          style={{ flex: 1, resize: 'none', border: '1.5px solid var(--ch-line)', borderRadius: 12, padding: '9px 12px', fontSize: 14, fontFamily: 'var(--ch-sans)', background: 'var(--ch-cream-2)', color: 'var(--ch-ink)', outline: 'none', lineHeight: 1.4, maxHeight: 120, overflowY: 'auto' }}
+          className="chat-page__textarea"
         />
         <button
           onClick={send}
           disabled={!text.trim()}
-          style={{ width: 40, height: 40, borderRadius: 12, border: 'none', background: text.trim() ? 'var(--ch-ink)' : 'var(--ch-line)', color: 'var(--ch-ivory)', cursor: text.trim() ? 'pointer' : 'default', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, transition: 'background 0.15s' }}
+          className={`chat-page__send-btn chat-page__send-btn--${text.trim() ? 'active' : 'disabled'}`}
         >
           <Icon name="arrowRight" size={18} />
         </button>

@@ -1,0 +1,23 @@
+// Color Hunt — Point d'entrée des styles
+@use 'tokens';
+@use 'base';
+
+// Composants
+@use 'components/notification-bell';
+@use 'components/app-shell';
+@use 'components/grid-card';
+@use 'components/participants-panel';
+@use 'components/add-friend-button';
+
+// Pages
+@use 'pages/auth';
+@use 'pages/dashboard';
+@use 'pages/social';
+@use 'pages/chat';
+@use 'pages/feed';
+@use 'pages/profile';
+@use 'pages/settings';
+@use 'pages/create-game';
+@use 'pages/lobby';
+@use 'pages/game-room';
+@use 'pages/grid-builder';

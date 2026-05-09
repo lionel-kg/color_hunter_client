@@ -61,47 +61,39 @@ export function FeedPage() {
   return (
     <div className="ch-screen ch-app" style={{ minHeight: '100vh' }}>
       <div className="ch-scroll" style={{ paddingBottom: 100 }}>
-        <div style={{ padding: '14px 20px 6px' }}>
-          <span className="ch-serif" style={{ fontSize: 20 }}>{t('feed.title')}</span>
+        <div className="feed__header">
+          <span className="ch-serif feed__title">{t('feed.title')}</span>
         </div>
 
-        <div style={{ padding: '4px 20px 12px', display: 'flex', gap: 6 }}>
+        <div className="feed__filters">
           {filters.map(opt => (
             <button
               key={opt.label}
               onClick={() => setFriendsOnly(opt.value)}
-              style={{
-                padding: '6px 14px', borderRadius: 999,
-                background: friendsOnly === opt.value ? 'var(--ch-ink)' : 'var(--ch-ivory)',
-                color: friendsOnly === opt.value ? 'var(--ch-ivory)' : 'var(--ch-ink-soft)',
-                border: `1px solid ${friendsOnly === opt.value ? 'var(--ch-ink)' : 'var(--ch-line)'}`,
-                fontSize: 12, cursor: 'pointer', fontFamily: 'var(--ch-sans)',
-              }}
+              className={`feed__filter-btn feed__filter-btn--${friendsOnly === opt.value ? 'active' : 'inactive'}`}
             >
               {opt.label}
             </button>
           ))}
         </div>
 
-        <div style={{ padding: '0 16px', display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div className="feed__list">
           {grids.map(g => <GridCard key={g.id} grid={g} currentUserId={me?.id} />)}
         </div>
 
-        <div ref={loaderRef} style={{ padding: '24px 0', display: 'flex', justifyContent: 'center' }}>
+        <div ref={loaderRef} className="feed__loader">
           {loading && (
-            <div style={{ display: 'flex', gap: 5, alignItems: 'center' }}>
+            <div className="feed__loader-dots">
               {[0, 1, 2].map(i => (
-                <div key={i} style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--ch-ink-mute)', opacity: 0.35 + i * 0.2 }} />
+                <div key={i} className="feed__loader-dot" style={{ opacity: 0.35 + i * 0.2 }} />
               ))}
             </div>
           )}
           {!hasMore && grids.length > 0 && (
-            <span style={{ fontSize: 12, color: 'var(--ch-ink-mute)', fontFamily: 'var(--ch-sans)' }}>
-              {t('feed.loadMore')}
-            </span>
+            <span className="feed__end-label">{t('feed.loadMore')}</span>
           )}
           {!loading && grids.length === 0 && (
-            <div className="ch-card" style={{ padding: 24, textAlign: 'center', fontSize: 13, color: 'var(--ch-ink-mute)', margin: '0 16px' }}>
+            <div className="ch-card feed__empty">
               {friendsOnly ? t('feed.emptyFriends') : t('feed.emptyAll')}
             </div>
           )}

@@ -18,7 +18,6 @@ export function CreateGamePage() {
   const [numTeams, setNumTeams] = useState(2);
   const [duration, setDuration] = useState<{ label: string; min: number }>({ label: "24h", min: 60 * 24 });
   const [maxPlayers, setMaxPlayers] = useState(6);
-
   const computedMaxPlayers = mode === "TEAM" ? numTeams * teamSize : maxPlayers;
   const [visibility, setVisibility] = useState<"PRIVATE" | "PUBLIC">("PRIVATE");
   const [colorPalettes, setColorPalettes] = useState<ColorPalette[]>(["PRIMARY"]);
@@ -46,9 +45,9 @@ export function CreateGamePage() {
   ];
 
   const durations = [
-    { label: "1h",                  min: 60 },
-    { label: "3h",                  min: 180 },
-    { label: "24h",                 min: 60 * 24 },
+    { label: "1h",                   min: 60 },
+    { label: "3h",                   min: 180 },
+    { label: "24h",                  min: 60 * 24 },
     { label: t('createGame.days_3'), min: 60 * 24 * 3 },
     { label: t('createGame.week_1'), min: 60 * 24 * 7 },
   ];
@@ -71,64 +70,70 @@ export function CreateGamePage() {
   return (
     <div className="ch-screen ch-app" style={{ minHeight: "100vh" }}>
       <div className="ch-scroll" style={{ paddingBottom: 120 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px' }}>
-          <Link to="/" style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ch-ink)" }}>
+        <div className="create-game__nav">
+          <Link to="/" className="ch-btn ch-btn--ghost" style={{ padding: 8, borderRadius: 8 }}>
             <Icon name="arrowLeft" size={22} />
           </Link>
-          <span style={{ fontSize: 12, color: "var(--ch-ink-mute)" }}>{t('createGame.step')}</span>
+          <span className="create-game__step-label">{t('createGame.step')}</span>
         </div>
 
-        <div style={{ padding: "8px 24px 24px" }}>
+        <div className="create-game__header">
           <div className="ch-eyebrow" style={{ marginBottom: 8 }}>{t('createGame.newHunt')}</div>
           <h1 className="ch-serif" style={{ fontSize: 36, lineHeight: 1, margin: 0, letterSpacing: "-0.02em" }}
             dangerouslySetInnerHTML={{ __html: t('createGame.howToPlay') }}
           />
         </div>
 
-        <div style={{ padding: "0 20px", display: "flex", flexDirection: "column", gap: 18 }}>
+        <div className="create-game__body">
           {/* Mode */}
           <div>
-            <div style={{ fontSize: 12, color: "var(--ch-ink-mute)", marginBottom: 8, padding: "0 4px" }}>
-              {t('createGame.gameMode')}
-            </div>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8 }}>
+            <div className="create-game__field-label">{t('createGame.gameMode')}</div>
+            <div className="create-game__mode-grid">
               {gameModes.map((o) => (
-                <button key={o.id} onClick={() => setMode(o.id)} style={{ background: mode === o.id ? "var(--ch-ink)" : "var(--ch-ivory)", color: mode === o.id ? "var(--ch-ivory)" : "var(--ch-ink)", border: "1px solid " + (mode === o.id ? "var(--ch-ink)" : "var(--ch-line)"), borderRadius: 14, padding: 14, cursor: "pointer", textAlign: "left", display: "flex", flexDirection: "column", gap: 8, fontFamily: "var(--ch-sans)" }}>
+                <button
+                  key={o.id}
+                  onClick={() => setMode(o.id)}
+                  className={`create-game__mode-btn create-game__mode-btn--${mode === o.id ? 'active' : 'inactive'}`}
+                >
                   <Icon name={o.icon} size={20} stroke={1.5} />
                   <div>
-                    <div style={{ fontSize: 14, fontWeight: 500 }}>{o.label}</div>
-                    <div style={{ fontSize: 11, opacity: 0.65 }}>{o.desc}</div>
+                    <div className="create-game__mode-name">{o.label}</div>
+                    <div className="create-game__mode-desc">{o.desc}</div>
                   </div>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Taille équipe + Nombre d'équipes */}
           {mode === "TEAM" && (
             <>
               <div>
-                <div style={{ fontSize: 12, color: "var(--ch-ink-mute)", marginBottom: 8, padding: "0 4px" }}>
-                  {t('createGame.teamSize')}
-                </div>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                <div className="create-game__field-label">{t('createGame.teamSize')}</div>
+                <div className="create-game__size-grid">
                   {teamSizes.map((o) => (
-                    <button key={o.v} onClick={() => setTeamSize(o.v)} style={{ background: teamSize === o.v ? "var(--ch-cream-3)" : "var(--ch-ivory)", border: "1px solid " + (teamSize === o.v ? "var(--ch-ink)" : "var(--ch-line)"), borderRadius: 14, padding: "12px 8px", cursor: "pointer", fontFamily: "var(--ch-sans)" }}>
-                      <div className="ch-serif" style={{ fontSize: 18 }}>{o.label}</div>
-                      <div style={{ fontSize: 10, color: "var(--ch-ink-mute)" }}>{o.sub}</div>
+                    <button
+                      key={o.v}
+                      onClick={() => setTeamSize(o.v)}
+                      className={`create-game__option-btn create-game__option-btn--${teamSize === o.v ? 'active' : 'inactive'}`}
+                    >
+                      <div className="ch-serif create-game__option-label">{o.label}</div>
+                      <div className="create-game__option-sub">{o.sub}</div>
                     </button>
                   ))}
                 </div>
               </div>
               <div>
-                <div style={{ fontSize: 12, color: "var(--ch-ink-mute)", marginBottom: 8, padding: "0 4px" }}>
-                  {t('createGame.numTeams')}
-                </div>
-                <div style={{ display: "flex", gap: 6 }}>
+                <div className="create-game__field-label">{t('createGame.numTeams')}</div>
+                <div className="create-game__num-grid">
                   {[2, 3, 4].map((n) => (
-                    <button key={n} onClick={() => setNumTeams(n)} style={{ flex: 1, padding: "10px 8px", borderRadius: 14, background: numTeams === n ? "var(--ch-cream-3)" : "var(--ch-ivory)", border: "1px solid " + (numTeams === n ? "var(--ch-ink)" : "var(--ch-line)"), cursor: "pointer", fontFamily: "var(--ch-sans)" }}>
-                      <div className="ch-serif" style={{ fontSize: 18 }}>{n}</div>
-                      <div style={{ fontSize: 10, color: "var(--ch-ink-mute)" }}>{t(`createGame.teams_${n}`)}</div>
+                    <button
+                      key={n}
+                      onClick={() => setNumTeams(n)}
+                      className={`create-game__option-btn create-game__option-btn--${numTeams === n ? 'active' : 'inactive'}`}
+                      style={{ flex: 1 }}
+                    >
+                      <div className="ch-serif create-game__option-label">{n}</div>
+                      <div className="create-game__option-sub">{t(`createGame.teams_${n}`)}</div>
                     </button>
                   ))}
                 </div>
@@ -138,13 +143,17 @@ export function CreateGamePage() {
 
           {/* Durée */}
           <div>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8, padding: "0 4px" }}>
-              <span style={{ fontSize: 12, color: "var(--ch-ink-mute)" }}>{t('createGame.duration')}</span>
-              <span style={{ fontSize: 12, color: "var(--ch-ink)", fontWeight: 500 }}>{duration.label}</span>
+            <div className="create-game__duration-header">
+              <span className="create-game__field-label" style={{ margin: 0 }}>{t('createGame.duration')}</span>
+              <span className="create-game__duration-value">{duration.label}</span>
             </div>
-            <div style={{ display: "flex", gap: 6, overflowX: "auto" }}>
+            <div className="create-game__duration-list">
               {durations.map((d) => (
-                <button key={d.min} onClick={() => setDuration(d)} style={{ flexShrink: 0, padding: "8px 14px", borderRadius: 999, background: duration.min === d.min ? "var(--ch-ink)" : "var(--ch-ivory)", color: duration.min === d.min ? "var(--ch-ivory)" : "var(--ch-ink-soft)", border: "1px solid " + (duration.min === d.min ? "var(--ch-ink)" : "var(--ch-line)"), fontSize: 13, cursor: "pointer", fontFamily: "var(--ch-sans)" }}>
+                <button
+                  key={d.min}
+                  onClick={() => setDuration(d)}
+                  className={`create-game__duration-btn create-game__duration-btn--${duration.min === d.min ? 'active' : 'inactive'}`}
+                >
                   {d.label}
                 </button>
               ))}
@@ -153,24 +162,30 @@ export function CreateGamePage() {
 
           {/* Palette */}
           <div>
-            <div style={{ fontSize: 12, color: "var(--ch-ink-mute)", marginBottom: 8, padding: "0 4px" }}>
-              {t('createGame.colorPalette')}
-            </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+            <div className="create-game__field-label">{t('createGame.colorPalette')}</div>
+            <div className="create-game__palette-list">
               {paletteOptions.map((o) => {
                 const active = colorPalettes.includes(o.id);
                 return (
-                  <button key={o.id} onClick={() => togglePalette(o.id)} style={{ display: "flex", alignItems: "center", gap: 12, padding: "12px 14px", borderRadius: 14, cursor: "pointer", fontFamily: "var(--ch-sans)", textAlign: "left", background: active ? "var(--ch-ivory)" : "transparent", border: "1.5px solid " + (active ? "var(--ch-ink)" : "var(--ch-line)") }}>
-                    <div style={{ display: "flex", gap: 4 }}>
+                  <button
+                    key={o.id}
+                    onClick={() => togglePalette(o.id)}
+                    className={`create-game__palette-btn create-game__palette-btn--${active ? 'active' : 'inactive'}`}
+                  >
+                    <div className="create-game__palette-swatches">
                       {PALETTE_COLORS[o.id].map((c) => (
-                        <div key={c} style={{ width: 14, height: 14, borderRadius: "50%", background: c, opacity: active ? 1 : 0.35 }} />
+                        <div
+                          key={c}
+                          className={`create-game__palette-swatch${!active ? ' create-game__palette-swatch--dimmed' : ''}`}
+                          style={{ background: c }}
+                        />
                       ))}
                     </div>
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 13, fontWeight: 500 }}>{o.label}</div>
-                      <div style={{ fontSize: 11, color: "var(--ch-ink-mute)" }}>{o.desc}</div>
+                    <div className="create-game__palette-info">
+                      <div className="create-game__palette-name">{o.label}</div>
+                      <div className="create-game__palette-desc">{o.desc}</div>
                     </div>
-                    <div style={{ width: 18, height: 18, borderRadius: 4, border: "1.5px solid " + (active ? "var(--ch-ink)" : "var(--ch-line-2)"), background: active ? "var(--ch-ink)" : "transparent", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <div className={`create-game__palette-check create-game__palette-check--${active ? 'checked' : 'unchecked'}`}>
                       {active && <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="var(--ch-ivory)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12l5 5 9-11"/></svg>}
                     </div>
                   </button>
@@ -180,10 +195,10 @@ export function CreateGamePage() {
           </div>
 
           {/* Max joueurs */}
-          <div className="ch-card" style={{ padding: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: mode === "SOLO" ? 12 : 0 }}>
+          <div className="ch-card create-game__max-card">
+            <div className={`create-game__max-header${mode === "SOLO" ? ' create-game__max-header--with-range' : ''}`}>
               <span style={{ fontSize: 13 }}>{t('createGame.maxPlayers')}</span>
-              <span className="ch-serif" style={{ fontSize: 24 }}>{computedMaxPlayers}</span>
+              <span className="ch-serif create-game__max-value">{computedMaxPlayers}</span>
             </div>
             {mode === "SOLO" && (
               <>
@@ -194,25 +209,27 @@ export function CreateGamePage() {
               </>
             )}
             {mode === "TEAM" && (
-              <div style={{ fontSize: 11, color: "var(--ch-ink-mute)", marginTop: 4 }}>
-                {numTeams} × {teamSize} {t('createGame.playersPerTeam')}
-              </div>
+              <div className="create-game__max-sub">{numTeams} × {teamSize} {t('createGame.playersPerTeam')}</div>
             )}
           </div>
 
           {/* Visibilité */}
-          <div className="ch-card" style={{ padding: 4 }}>
+          <div className="ch-card create-game__visibility-card">
             {visibilityOptions.map((o) => (
-              <button key={o.id} onClick={() => setVisibility(o.id)} style={{ width: "100%", background: visibility === o.id ? "var(--ch-cream-2)" : "transparent", border: "none", borderRadius: 14, padding: 12, display: "flex", alignItems: "center", gap: 12, cursor: "pointer", fontFamily: "var(--ch-sans)", textAlign: "left" }}>
-                <div style={{ width: 36, height: 36, borderRadius: 10, background: "var(--ch-cream-3)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <button
+                key={o.id}
+                onClick={() => setVisibility(o.id)}
+                className={`create-game__visibility-btn create-game__visibility-btn--${visibility === o.id ? 'active' : 'inactive'}`}
+              >
+                <div className="create-game__visibility-icon">
                   <Icon name={o.icon} size={18} stroke={1.5} />
                 </div>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13, fontWeight: 500 }}>{o.label}</div>
-                  <div style={{ fontSize: 11, color: "var(--ch-ink-mute)" }}>{o.desc}</div>
+                <div className="create-game__visibility-text">
+                  <div className="create-game__visibility-name">{o.label}</div>
+                  <div className="create-game__visibility-desc">{o.desc}</div>
                 </div>
-                <div style={{ width: 18, height: 18, borderRadius: "50%", border: "1.5px solid " + (visibility === o.id ? "var(--ch-ink)" : "var(--ch-line-2)"), display: "flex", alignItems: "center", justifyContent: "center" }}>
-                  {visibility === o.id && <div style={{ width: 8, height: 8, borderRadius: "50%", background: "var(--ch-ink)" }} />}
+                <div className={`create-game__visibility-radio create-game__visibility-radio--${visibility === o.id ? 'selected' : 'unselected'}`}>
+                  {visibility === o.id && <div className="create-game__visibility-dot" />}
                 </div>
               </button>
             ))}
@@ -220,8 +237,8 @@ export function CreateGamePage() {
         </div>
       </div>
 
-      <div style={{ position: "fixed", bottom: 0, left: 0, right: 0, padding: "16px 20px 32px", background: "linear-gradient(to top, var(--ch-cream) 70%, transparent)" }}>
-        <button className="ch-btn" disabled={loading} onClick={submit} style={{ width: "100%", padding: 16, fontSize: 15 }}>
+      <div className="create-game__footer">
+        <button className="ch-btn create-game__submit-btn" disabled={loading} onClick={submit}>
           {loading ? "…" : t('createGame.create')} <Icon name="arrowRight" size={18} />
         </button>
       </div>

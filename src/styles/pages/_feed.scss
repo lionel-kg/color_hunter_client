@@ -1,0 +1,76 @@
+// FeedPage
+
+.feed {
+  &__header {
+    padding: 14px 20px 6px;
+  }
+
+  &__title { font-size: 20px; }
+
+  &__filters {
+    padding: 4px 20px 12px;
+    display: flex;
+    gap: 6px;
+  }
+
+  &__filter-btn {
+    padding: 6px 14px;
+    border-radius: var(--ch-r-pill);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+    transition: background 0.15s, color 0.15s, border-color 0.15s;
+
+    &--active {
+      background: var(--ch-ink);
+      color: var(--ch-ivory);
+      border: 1px solid var(--ch-ink);
+    }
+
+    &--inactive {
+      background: var(--ch-ivory);
+      color: var(--ch-ink-soft);
+      border: 1px solid var(--ch-line);
+    }
+  }
+
+  &__list {
+    padding: 0 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__loader {
+    padding: 24px 0;
+    display: flex;
+    justify-content: center;
+  }
+
+  &__loader-dots {
+    display: flex;
+    gap: 5px;
+    align-items: center;
+  }
+
+  &__loader-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--ch-ink-mute);
+  }
+
+  &__end-label {
+    font-size: 12px;
+    color: var(--ch-ink-mute);
+    font-family: var(--ch-sans);
+  }
+
+  &__empty {
+    padding: 24px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ch-ink-mute);
+    margin: 0 16px;
+  }
+}

@@ -1,0 +1,75 @@
+// Color Hunt — Design Tokens
+// Migré depuis tokens.css — variables CSS conservées pour compatibilité runtime
+
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap');
+
+:root {
+  // Neutrals
+  --ch-cream:    #F5F0E8;
+  --ch-cream-2:  #EDE5D8;
+  --ch-cream-3:  #DFD3BF;
+  --ch-paper:    #FBF8F3;
+  --ch-ivory:    #FFFEFA;
+
+  // Borders
+  --ch-line:   rgba(91, 72, 48, 0.08);
+  --ch-line-2: rgba(91, 72, 48, 0.18);
+
+  // Ink
+  --ch-ink:      #2B241D;
+  --ch-ink-soft: #4A4036;
+  --ch-ink-mute: #9A8E7F;
+
+  // Pastels
+  --ch-blush:     #E8C5BB;
+  --ch-rose-deep: #C99687;
+  --ch-sage:      #BFCDB6;
+  --ch-sage-deep: #8FA487;
+  --ch-sky:       #C5D5DE;
+  --ch-butter:    #F0E2B6;
+  --ch-clay:      #C99B7E;
+  --ch-clay-deep: #A8755A;
+  --ch-dusk:      #A8A4C9;
+
+  // Functional
+  --ch-success: #8FA487;
+  --ch-danger:  #C97B7B;
+
+  // Typography
+  --ch-serif: 'Instrument Serif', 'Iowan Old Style', Georgia, serif;
+  --ch-sans:  'Geist', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --ch-mono:  'Geist Mono', 'SF Mono', Menlo, monospace;
+
+  // Radii
+  --ch-r-sm:   10px;
+  --ch-r-md:   16px;
+  --ch-r-lg:   24px;
+  --ch-r-xl:   32px;
+  --ch-r-pill: 999px;
+
+  // Shadows
+  --ch-shadow-sm: 0 1px 2px rgba(91, 72, 48, 0.05), 0 2px 6px rgba(91, 72, 48, 0.04);
+  --ch-shadow:    0 2px 6px rgba(91, 72, 48, 0.06), 0 8px 24px rgba(91, 72, 48, 0.06);
+  --ch-shadow-lg: 0 4px 12px rgba(91, 72, 48, 0.08), 0 16px 40px rgba(91, 72, 48, 0.08);
+
+  // Accent (overridden per game color)
+  --accent:   var(--ch-clay);
+  --accent-2: var(--ch-clay-deep);
+}
+
+// SCSS aliases (compile-time, for use inside SCSS files only)
+$cream:    #F5F0E8;
+$cream-2:  #EDE5D8;
+$cream-3:  #DFD3BF;
+$paper:    #FBF8F3;
+$ivory:    #FFFEFA;
+$ink:      #2B241D;
+$ink-soft: #4A4036;
+$ink-mute: #9A8E7F;
+$clay:     #C99B7E;
+$clay-deep:#A8755A;
+$sage:     #BFCDB6;
+$sage-deep:#8FA487;
+$danger:   #C97B7B;
+$line:     rgba(91, 72, 48, 0.08);
+$line-2:   rgba(91, 72, 48, 0.18);

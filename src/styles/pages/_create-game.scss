@@ -1,0 +1,288 @@
+// CreateGamePage
+
+.create-game {
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+
+  &__step-label {
+    font-size: 12px;
+    color: var(--ch-ink-mute);
+  }
+
+  &__header {
+    padding: 8px 24px 24px;
+  }
+
+  &__body {
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  &__field-label {
+    font-size: 12px;
+    color: var(--ch-ink-mute);
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+
+  // Mode (solo/team) selector
+  &__mode-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  &__mode-btn {
+    border-radius: 14px;
+    padding: 14px;
+    cursor: pointer;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-family: var(--ch-sans);
+    transition: background 0.15s, color 0.15s;
+
+    &--active {
+      background: var(--ch-ink);
+      color: var(--ch-ivory);
+      border: 1px solid var(--ch-ink);
+    }
+
+    &--inactive {
+      background: var(--ch-ivory);
+      color: var(--ch-ink);
+      border: 1px solid var(--ch-line);
+    }
+  }
+
+  &__mode-name { font-size: 14px; font-weight: 500; }
+  &__mode-desc { font-size: 11px; opacity: 0.65; }
+
+  // Team size / num teams
+  &__size-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+  }
+
+  &__num-grid {
+    display: flex;
+    gap: 6px;
+  }
+
+  &__option-btn {
+    padding: 12px 8px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+    transition: background 0.15s, border-color 0.15s;
+
+    &--active {
+      background: var(--ch-cream-3);
+      border: 1px solid var(--ch-ink);
+    }
+
+    &--inactive {
+      background: var(--ch-ivory);
+      border: 1px solid var(--ch-line);
+    }
+  }
+
+  &__option-label { font-size: 18px; }
+  &__option-sub   { font-size: 10px; color: var(--ch-ink-mute); }
+
+  // Durée
+  &__duration-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+
+  &__duration-value { font-size: 12px; font-weight: 500; }
+
+  &__duration-list {
+    display: flex;
+    gap: 6px;
+    overflow-x: auto;
+  }
+
+  &__duration-btn {
+    flex-shrink: 0;
+    padding: 8px 14px;
+    border-radius: var(--ch-r-pill);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+    transition: background 0.15s, color 0.15s;
+
+    &--active {
+      background: var(--ch-ink);
+      color: var(--ch-ivory);
+      border: 1px solid var(--ch-ink);
+    }
+
+    &--inactive {
+      background: var(--ch-ivory);
+      color: var(--ch-ink-soft);
+      border: 1px solid var(--ch-line);
+    }
+  }
+
+  // Palette couleurs
+  &__palette-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__palette-btn {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+    text-align: left;
+    transition: background 0.15s, border-color 0.15s;
+
+    &--active {
+      background: var(--ch-ivory);
+      border: 1.5px solid var(--ch-ink);
+    }
+
+    &--inactive {
+      background: transparent;
+      border: 1.5px solid var(--ch-line);
+    }
+  }
+
+  &__palette-swatches { display: flex; gap: 4px; }
+
+  &__palette-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    transition: opacity 0.2s;
+
+    &--dimmed { opacity: 0.35; }
+  }
+
+  &__palette-info { flex: 1; }
+  &__palette-name { font-size: 13px; font-weight: 500; }
+  &__palette-desc { font-size: 11px; color: var(--ch-ink-mute); }
+
+  &__palette-check {
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: background 0.15s, border-color 0.15s;
+
+    &--checked {
+      background: var(--ch-ink);
+      border: 1.5px solid var(--ch-ink);
+    }
+
+    &--unchecked {
+      background: transparent;
+      border: 1.5px solid var(--ch-line-2);
+    }
+  }
+
+  // Max joueurs
+  &__max-card { padding: 16px; }
+
+  &__max-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+
+    &--with-range { margin-bottom: 12px; }
+  }
+
+  &__max-value { font-size: 24px; }
+  &__max-sub   { font-size: 11px; color: var(--ch-ink-mute); margin-top: 4px; }
+
+  // Visibilité
+  &__visibility-card { padding: 4px; }
+
+  &__visibility-btn {
+    width: 100%;
+    border: none;
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+    text-align: left;
+    transition: background 0.15s;
+
+    &--active   { background: var(--ch-cream-2); }
+    &--inactive { background: transparent; }
+  }
+
+  &__visibility-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    background: var(--ch-cream-3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  &__visibility-text { flex: 1; }
+  &__visibility-name { font-size: 13px; font-weight: 500; }
+  &__visibility-desc { font-size: 11px; color: var(--ch-ink-mute); }
+
+  &__visibility-radio {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s;
+
+    &--selected { border: 1.5px solid var(--ch-ink); }
+    &--unselected { border: 1.5px solid var(--ch-line-2); }
+  }
+
+  &__visibility-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ch-ink);
+  }
+
+  // CTA fixe en bas
+  &__footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px 20px 32px;
+    background: linear-gradient(to top, var(--ch-cream) 70%, transparent);
+  }
+
+  &__submit-btn {
+    width: 100%;
+    padding: 16px;
+    font-size: 15px;
+  }
+}

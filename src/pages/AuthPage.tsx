@@ -25,8 +25,7 @@ export function AuthPage() {
     setLoading(true);
     try {
       const url = mode === "signup" ? "/auth/signup" : "/auth/login";
-      const body =
-        mode === "signup" ? { pseudo, email, password } : { email, password };
+      const body = mode === "signup" ? { pseudo, email, password } : { email, password };
       const { data } = await api.post(url, body);
       setSession(data);
       navigate("/");
@@ -38,37 +37,28 @@ export function AuthPage() {
   };
 
   return (
-    <div
-      className="ch-screen ch-app"
-      style={{
-        minHeight: "100vh",
-        padding: "0 24px",
-        display: "flex",
-        flexDirection: "column",
-      }}
-    >
-      <div style={{ position: "absolute", top: 16, right: 24 }}>
+    <div className="ch-screen ch-app auth-page">
+      <div className="auth-page__lang-btn">
         <LangSwitch />
       </div>
 
-      <div style={{ paddingTop: 56, position: "relative", height: 220 }}>
-        <div style={{ position: "absolute", top: 30, left: 12, width: 110, height: 110, borderRadius: "50%", background: "var(--ch-blush)" }} />
-        <div style={{ position: "absolute", top: 70, right: 4, width: 130, height: 130, borderRadius: "50%", background: "var(--ch-sage)" }} />
-        <div style={{ position: "absolute", top: 110, left: 100, width: 80, height: 80, borderRadius: "50%", background: "var(--ch-clay)", mixBlendMode: "multiply" }} />
+      <div className="auth-page__blobs">
+        <div className="auth-page__blob auth-page__blob--blush" />
+        <div className="auth-page__blob auth-page__blob--sage" />
+        <div className="auth-page__blob auth-page__blob--clay" />
       </div>
 
       <Logo size={16} />
 
       <h1
-        className="ch-serif"
-        style={{ fontSize: 44, lineHeight: 1, margin: "20px 0 8px", letterSpacing: "-0.02em" }}
+        className="ch-serif auth-page__title"
         dangerouslySetInnerHTML={{ __html: mode === "signup" ? t("auth.signupTitle") : t("auth.loginTitle") }}
       />
-      <p style={{ fontSize: 14, color: "var(--ch-ink-soft)", lineHeight: 1.5, margin: "0 0 24px", maxWidth: 280 }}>
+      <p className="auth-page__subtitle">
         {mode === "signup" ? t("auth.signupSubtitle") : t("auth.loginSubtitle")}
       </p>
 
-      <form onSubmit={submit} style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      <form onSubmit={submit} className="auth-page__form">
         {mode === "signup" && (
           <input
             className="ch-input"
@@ -86,7 +76,7 @@ export function AuthPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
-        <div style={{ position: "relative" }}>
+        <div className="auth-page__password-wrapper">
           <input
             className="ch-input"
             type={showPassword ? "text" : "password"}
@@ -99,26 +89,26 @@ export function AuthPage() {
           <button
             type="button"
             onClick={() => setShowPassword((s) => !s)}
-            style={{ position: "absolute", right: 12, top: "50%", transform: "translateY(-50%)", background: "none", border: "none", color: "var(--ch-ink-mute)", cursor: "pointer", padding: 4 }}
+            className="auth-page__password-toggle"
           >
             <Icon name={showPassword ? "eyeOff" : "eye"} size={18} />
           </button>
         </div>
 
-        {error && <div style={{ fontSize: 12, color: "var(--ch-danger)" }}>{error}</div>}
+        {error && <div className="auth-page__error">{error}</div>}
 
-        <button type="submit" className="ch-btn" disabled={loading} style={{ marginTop: 8, padding: "16px 22px" }}>
+        <button type="submit" className="ch-btn auth-page__submit-btn" disabled={loading}>
           {loading ? "…" : mode === "signup" ? t("auth.createAccount") : t("auth.login")}
           <Icon name="arrowRight" size={18} />
         </button>
       </form>
 
-      <p style={{ fontSize: 13, color: "var(--ch-ink-mute)", textAlign: "center", marginTop: "auto", paddingBottom: 30 }}>
+      <p className="auth-page__footer">
         {mode === "signup" ? t("auth.alreadyAccount") : t("auth.firstHunt")}{" "}
         <button
           type="button"
           onClick={() => setMode((m) => (m === "signup" ? "login" : "signup"))}
-          style={{ background: "none", border: "none", color: "var(--ch-ink)", textDecoration: "underline", textUnderlineOffset: 3, cursor: "pointer", font: "inherit" }}
+          className="auth-page__switch-btn"
         >
           {mode === "signup" ? t("auth.login") : t("auth.createAccount")}
         </button>

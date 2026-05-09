@@ -1,0 +1,113 @@
+// AuthPage
+
+.auth-page {
+  min-height: 100vh;
+  padding: 0 24px;
+  display: flex;
+  flex-direction: column;
+
+  &__lang-btn {
+    position: absolute;
+    top: 16px;
+    right: 24px;
+  }
+
+  &__blobs {
+    padding-top: 56px;
+    position: relative;
+    height: 220px;
+  }
+
+  &__blob {
+    position: absolute;
+    border-radius: 50%;
+
+    &--blush {
+      top: 30px;
+      left: 12px;
+      width: 110px;
+      height: 110px;
+      background: var(--ch-blush);
+    }
+
+    &--sage {
+      top: 70px;
+      right: 4px;
+      width: 130px;
+      height: 130px;
+      background: var(--ch-sage);
+    }
+
+    &--clay {
+      top: 110px;
+      left: 100px;
+      width: 80px;
+      height: 80px;
+      background: var(--ch-clay);
+      mix-blend-mode: multiply;
+    }
+  }
+
+  &__title {
+    font-size: 44px;
+    line-height: 1;
+    margin: 20px 0 8px;
+    letter-spacing: -0.02em;
+  }
+
+  &__subtitle {
+    font-size: 14px;
+    color: var(--ch-ink-soft);
+    line-height: 1.5;
+    margin: 0 0 24px;
+    max-width: 280px;
+  }
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__password-wrapper { position: relative; }
+
+  &__password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--ch-ink-mute);
+    cursor: pointer;
+    padding: 4px;
+  }
+
+  &__error {
+    font-size: 12px;
+    color: var(--ch-danger);
+  }
+
+  &__submit-btn {
+    margin-top: 8px;
+    padding: 16px 22px;
+  }
+
+  &__footer {
+    font-size: 13px;
+    color: var(--ch-ink-mute);
+    text-align: center;
+    margin-top: auto;
+    padding-bottom: 30px;
+  }
+
+  &__switch-btn {
+    background: none;
+    border: none;
+    color: var(--ch-ink);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    font: inherit;
+  }
+}

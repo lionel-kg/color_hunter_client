@@ -62,7 +62,6 @@ export function GameRoomPage() {
       .catch(() => {});
   }, [id]);
 
-  // Trigger reveal when status transitions to RUNNING (e.g. via polling or socket)
   useEffect(() => {
     if (!game) return;
     if (
@@ -84,7 +83,6 @@ export function GameRoomPage() {
     game?.status === "RUNNING" ? game.expiresAt : null,
   );
 
-  // Recharge le jeu quand le compte à rebours local atteint 0
   useEffect(() => {
     if (!countdown.expired || !id || game?.status !== "RUNNING") return;
     api
@@ -96,7 +94,6 @@ export function GameRoomPage() {
       .catch(() => {});
   }, [countdown.expired]);
 
-  // Ecoute l'event server game:finished via Socket.io
   useEffect(() => {
     if (!id) return;
     const socket = socketIO(SERVER_URL, {
@@ -195,25 +192,12 @@ export function GameRoomPage() {
       className="ch-screen ch-app ch-tinted"
       style={{ minHeight: "100vh", ["--accent" as any]: myColor.hex }}
     >
-      {/* Reveal overlay — spins the wheel then fades out */}
       {revealing && (
         <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            zIndex: 100,
-            background: "var(--ch-cream)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-            gap: 24,
-            animation: `ch-fade-out 0.4s ease ${SPIN_DURATION_MS - 400}ms both`,
-          }}
+          className="game-room__reveal-overlay"
+          style={{ animation: `ch-fade-out 0.4s ease ${SPIN_DURATION_MS - 400}ms both` }}
         >
-          <div className="ch-eyebrow" style={{ letterSpacing: "0.12em" }}>
-            TA COULEUR
-          </div>
+          <div className="ch-eyebrow game-room__reveal-label">TA COULEUR</div>
           <ColorWheel
             size={240}
             hex={myColor.hex}
@@ -221,58 +205,27 @@ export function GameRoomPage() {
             spinning
             colorPalettes={game.colorPalettes}
           />
-          <div
-            className="ch-serif"
-            style={{ fontSize: 14, color: "var(--ch-ink-mute)" }}
-          >
-            La chasse commence…
-          </div>
+          <div className="ch-serif game-room__reveal-sub">La chasse commence…</div>
         </div>
       )}
 
       <div className="ch-scroll" style={{ paddingBottom: 110 }}>
         <header className="ch-topbar">
-          <Link
-            to="/"
-            style={{
-              background: "var(--ch-ivory)",
-              border: "1px solid var(--ch-line)",
-              borderRadius: 999,
-              padding: 8,
-              cursor: "pointer",
-            }}
-          >
+          <Link to="/" className="game-room__topbar-back">
             <Icon name="arrowLeft" size={16} />
           </Link>
           <button
             onClick={() => setShowParticipants(true)}
-            style={{
-              background: "var(--ch-ivory)",
-              border: "1px solid var(--ch-line)",
-              borderRadius: 999,
-              padding: 8,
-              cursor: "pointer",
-              display: "flex",
-              alignItems: "center",
-            }}
+            className="game-room__topbar-participants"
           >
             <Icon name="users" size={16} />
           </button>
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div className="game-room__topbar-right">
             <span className="ch-pill">
               {game.status === "RUNNING" ? "● En direct" : game.status}
             </span>
             {game.status === "RUNNING" && game.expiresAt && (
-              <span
-                className="ch-mono"
-                style={{
-                  fontSize: 12,
-                  color: countdown.urgent
-                    ? "var(--ch-danger)"
-                    : "var(--ch-ink-mute)",
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
+              <span className={`ch-mono game-room__countdown game-room__countdown--${countdown.urgent ? "urgent" : "mute"}`}>
                 ⏱ {countdown.label}
               </span>
             )}
@@ -280,18 +233,7 @@ export function GameRoomPage() {
               <button
                 onClick={onEnd}
                 disabled={ending}
-                style={{
-                  padding: "5px 10px",
-                  fontSize: 11,
-                  fontFamily: "var(--ch-sans)",
-                  fontWeight: 600,
-                  background: "var(--ch-danger, #e05a5a)",
-                  color: "#fff",
-                  border: "none",
-                  borderRadius: 999,
-                  cursor: "pointer",
-                  opacity: ending ? 0.6 : 1,
-                }}
+                className={`game-room__end-btn${ending ? " game-room__end-btn--loading" : ""}`}
               >
                 {ending ? "…" : "Terminer"}
               </button>
@@ -299,17 +241,9 @@ export function GameRoomPage() {
           </div>
         </header>
 
-        <div style={{ padding: "20px 24px 0", textAlign: "center" }}>
-          <div className="ch-eyebrow" style={{ marginBottom: 8 }}>
-            TA COULEUR
-          </div>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              marginBottom: 16,
-            }}
-          >
+        <div className="game-room__color-section">
+          <div className="ch-eyebrow" style={{ marginBottom: 8 }}>TA COULEUR</div>
+          <div className="game-room__color-wheel">
             <ColorWheel
               size={200}
               hex={myColor.hex}
@@ -322,82 +256,35 @@ export function GameRoomPage() {
           </div>
         </div>
 
-        {/* ── Moisson — masquée quand la partie est terminée ── */}
         {game.status !== "FINISHED" && (
-          <div style={{ padding: "20px 20px 0" }}>
-            <div className="ch-card" style={{ padding: 16 }}>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "space-between",
-                  marginBottom: 10,
-                }}
-              >
-                <span style={{ fontSize: 13, fontWeight: 500 }}>
-                  Ta moisson
-                </span>
-                <span
-                  className="ch-mono"
-                  style={{ fontSize: 12, color: "var(--ch-ink-soft)" }}
-                >
+          <div className="game-room__harvest">
+            <div className="ch-card game-room__harvest-card">
+              <div className="game-room__harvest-header">
+                <span className="game-room__harvest-title">Ta moisson</span>
+                <span className="ch-mono game-room__harvest-count">
                   {photos.length} / {quota}
                 </span>
               </div>
-              <div
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "repeat(3, 1fr)",
-                  gap: 6,
-                }}
-              >
+              <div className="game-room__harvest-grid">
                 {Array.from({ length: quota }).map((_, i) => {
                   const photo = photos[i];
                   return photo ? (
-                    <div key={photo.id} style={{ position: "relative" }}>
+                    <div key={photo.id} className="game-room__harvest-photo">
                       <img
                         src={SERVER_URL + photo.cloudinaryUrl}
                         alt=""
-                        style={{
-                          width: "100%",
-                          aspectRatio: "1",
-                          objectFit: "cover",
-                          borderRadius: 8,
-                          display: "block",
-                        }}
+                        className="game-room__harvest-img"
                       />
                       <button
                         onClick={() => onDelete(photo)}
                         disabled={deleting === photo.id}
-                        style={{
-                          position: "absolute",
-                          top: 4,
-                          right: 4,
-                          width: 22,
-                          height: 22,
-                          borderRadius: "50%",
-                          border: "none",
-                          background: "rgba(0,0,0,0.55)",
-                          color: "#fff",
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                          padding: 0,
-                        }}
+                        className="game-room__harvest-delete"
                       >
                         <Icon name="x" size={12} />
                       </button>
                     </div>
                   ) : (
-                    <div
-                      key={i}
-                      style={{
-                        aspectRatio: 1,
-                        borderRadius: 8,
-                        border: "1.5px dashed var(--ch-line-2)",
-                      }}
-                    />
+                    <div key={i} className="game-room__harvest-empty-slot" />
                   );
                 })}
               </div>
@@ -405,79 +292,33 @@ export function GameRoomPage() {
           </div>
         )}
 
-        {/* ── Résultats — visible quand la partie est terminée ── */}
         {game.status === "FINISHED" && (
-          <div style={{ padding: "20px 20px 0" }}>
-            {/* CTA si l'utilisateur n'a pas encore composé sa grille */}
+          <div className="game-room__results">
             {!existingGrid && (
-              <div
-                style={{
-                  borderRadius: 18,
-                  padding: "24px 18px",
-                  marginBottom: 16,
-                  background:
-                    "linear-gradient(135deg, #C99B7E 0%, #A8755A 100%)",
-                  color: "var(--ch-ivory)",
-                  textAlign: "center",
-                }}
-              >
-                <div
-                  className="ch-serif"
-                  style={{ fontSize: 22, marginBottom: 6 }}
-                >
-                  La chasse est terminée
-                </div>
-                <div style={{ fontSize: 13, opacity: 0.85, marginBottom: 16 }}>
+              <div className="game-room__results-cta">
+                <div className="ch-serif game-room__results-cta-title">La chasse est terminée</div>
+                <div className="game-room__results-cta-sub">
                   Compose ta grille et sauvegarde-la sur ton profil.
                 </div>
-                <Link
-                  to={`/games/${id}/grid`}
-                  style={{
-                    display: "inline-block",
-                    background: "var(--ch-ivory)",
-                    color: "var(--ch-clay-deep)",
-                    borderRadius: 999,
-                    padding: "10px 24px",
-                    fontSize: 13,
-                    fontWeight: 600,
-                    textDecoration: "none",
-                  }}
-                >
+                <Link to={`/games/${id}/grid`} className="game-room__results-cta-link">
                   Composer ma grille →
                 </Link>
               </div>
             )}
 
-            {/* Grilles de tous les participants */}
             {gameGrids.length > 0 && (
-              <div
-                style={{ display: "flex", flexDirection: "column", gap: 20 }}
-              >
+              <div className="game-room__grids-list">
                 {gameGrids.map((grid) => {
                   const gridUrl = grid.imageUrl.startsWith("http")
                     ? grid.imageUrl
                     : SERVER_URL + grid.imageUrl;
                   return (
-                    <div
-                      key={grid.id}
-                      className="ch-card"
-                      style={{ padding: 14 }}
-                    >
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: 8,
-                          marginBottom: 10,
-                        }}
-                      >
-                        <div
-                          className="ch-avatar"
-                          style={{ width: 28, height: 28, fontSize: 11 }}
-                        >
+                    <div key={grid.id} className="ch-card game-room__grid-result">
+                      <div className="game-room__grid-result-header">
+                        <div className="ch-avatar" style={{ width: 28, height: 28, fontSize: 11 }}>
                           {grid.user?.pseudo[0]?.toUpperCase()}
                         </div>
-                        <span style={{ fontSize: 13, fontWeight: 600 }}>
+                        <span className="game-room__grid-result-pseudo">
                           {grid.user?.pseudo}
                           {grid.userId === me?.id && " (toi)"}
                         </span>
@@ -485,15 +326,10 @@ export function GameRoomPage() {
                       <img
                         src={gridUrl}
                         alt={`Grille de ${grid.user?.pseudo}`}
-                        style={{
-                          width: "100%",
-                          borderRadius: 10,
-                          display: "block",
-                          marginBottom: 10,
-                        }}
+                        className="game-room__grid-result-img"
                       />
                       <button
-                        className="ch-btn"
+                        className="ch-btn game-room__download-btn"
                         disabled={downloading}
                         onClick={() =>
                           download(
@@ -501,12 +337,6 @@ export function GameRoomPage() {
                             `grille-${grid.user?.pseudo ?? "joueur"}-color-hunt.jpg`,
                           )
                         }
-                        style={{
-                          width: "100%",
-                          padding: "10px 0",
-                          fontSize: 13,
-                          justifyContent: "center",
-                        }}
                       >
                         <Icon name="download" size={14} />{" "}
                         {downloading ? "Téléchargement…" : "Télécharger"}
@@ -520,40 +350,13 @@ export function GameRoomPage() {
         )}
 
         {game.status === "RUNNING" && (
-          <div style={{ padding: "14px 20px 0" }}>
-            <div
-              style={{
-                borderRadius: 18,
-                padding: "24px 18px",
-                background: "var(--ch-ivory)",
-                border: "2px dashed var(--ch-clay)",
-                textAlign: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: 48,
-                  height: 48,
-                  borderRadius: 14,
-                  background: "var(--ch-cream-2)",
-                  display: "inline-flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  marginBottom: 10,
-                }}
-              >
+          <div className="game-room__upload-cta">
+            <div className="game-room__upload-card">
+              <div className="game-room__upload-icon">
                 <Icon name="camera" size={22} />
               </div>
-              <div style={{ fontSize: 14, fontWeight: 500 }}>
-                Capture ou dépose
-              </div>
-              <div
-                style={{
-                  fontSize: 12,
-                  color: "var(--ch-ink-mute)",
-                  marginTop: 4,
-                }}
-              >
+              <div className="game-room__upload-title">Capture ou dépose</div>
+              <div className="game-room__upload-sub">
                 Les EXIF sont vérifiés automatiquement
               </div>
               <input
@@ -565,10 +368,9 @@ export function GameRoomPage() {
                 style={{ display: "none" }}
               />
               <button
-                className="ch-btn"
+                className="ch-btn game-room__upload-btn"
                 disabled={uploading || slots === 0}
                 onClick={() => fileInput.current?.click()}
-                style={{ marginTop: 14, padding: "10px 16px", fontSize: 13 }}
               >
                 <Icon name="upload" size={14} />{" "}
                 {uploading

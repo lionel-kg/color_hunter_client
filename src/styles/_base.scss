@@ -1,0 +1,278 @@
+// Color Hunt — Base / Reset / Utilitaires globaux
+@use 'tokens' as *;
+
+*  { box-sizing: border-box; }
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--ch-cream);
+  font-family: var(--ch-sans);
+  color: var(--ch-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+// ── Écrans ─────────────────────────────────────────────────────────────────
+
+.ch-app {
+  font-family: var(--ch-sans);
+  color: var(--ch-ink);
+  background: var(--ch-cream);
+  letter-spacing: -0.005em;
+}
+
+.ch-screen {
+  font-family: var(--ch-sans);
+  color: var(--ch-ink);
+  background: var(--ch-cream);
+  width: 100%;
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+}
+
+.ch-scroll {
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+.ch-screen * {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar { display: none; }
+}
+
+// Écran teinté — halo radial de la couleur de la chasse
+.ch-tinted {
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      circle at 50% 0%,
+      color-mix(in srgb, var(--accent) 22%, transparent),
+      transparent 55%
+    );
+    z-index: 0;
+  }
+
+  > * {
+    position: relative;
+    z-index: 1;
+  }
+}
+
+// ── Typographie ────────────────────────────────────────────────────────────
+
+.ch-serif {
+  font-family: var(--ch-serif);
+  letter-spacing: -0.015em;
+  font-weight: 400;
+}
+
+.ch-mono { font-family: var(--ch-mono); }
+
+.ch-eyebrow {
+  font-family: var(--ch-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ch-ink-mute);
+}
+
+.ch-display {
+  font-family: var(--ch-serif);
+  font-weight: 400;
+  letter-spacing: -0.025em;
+  line-height: 0.95;
+}
+
+// ── Boutons ────────────────────────────────────────────────────────────────
+
+.ch-btn {
+  font-family: var(--ch-sans);
+  font-weight: 500;
+  font-size: 14px;
+  border: none;
+  cursor: pointer;
+  border-radius: var(--ch-r-pill);
+  padding: 14px 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: var(--ch-ink);
+  color: var(--ch-ivory);
+  transition: transform 0.15s ease, opacity 0.15s ease;
+  letter-spacing: -0.005em;
+
+  &:active { transform: scale(0.97); }
+
+  &--soft {
+    background: var(--ch-cream-2);
+    color: var(--ch-ink);
+  }
+
+  &--ghost {
+    background: transparent;
+    color: var(--ch-ink-soft);
+  }
+}
+
+// ── Carte ──────────────────────────────────────────────────────────────────
+
+.ch-card {
+  background: var(--ch-ivory);
+  border-radius: var(--ch-r-lg);
+  border: 1px solid var(--ch-line);
+  box-shadow: var(--ch-shadow-sm);
+}
+
+// ── Pills / Chips ──────────────────────────────────────────────────────────
+
+.ch-pill,
+.ch-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 11px;
+  border-radius: var(--ch-r-pill);
+  font-size: 11px;
+  font-weight: 500;
+  background: var(--ch-cream-2);
+  color: var(--ch-ink-soft);
+  border: 1px solid var(--ch-line);
+  font-family: var(--ch-sans);
+}
+
+// ── Input ──────────────────────────────────────────────────────────────────
+
+.ch-input {
+  font-family: var(--ch-sans);
+  font-size: 15px;
+  background: var(--ch-ivory);
+  border: 1px solid var(--ch-line);
+  border-radius: var(--ch-r-md);
+  padding: 14px 16px;
+  width: 100%;
+  color: var(--ch-ink);
+  transition: border-color 0.15s ease, background 0.15s ease;
+
+  &:focus {
+    outline: none;
+    background: var(--ch-paper);
+    border-color: var(--ch-cream-3);
+  }
+
+  &::placeholder { color: var(--ch-ink-mute); }
+}
+
+// ── Avatar ─────────────────────────────────────────────────────────────────
+
+.ch-avatar {
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ch-clay), var(--ch-sage-deep));
+  color: var(--ch-ivory);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--ch-serif);
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+// ── Barre supérieure ───────────────────────────────────────────────────────
+
+.ch-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px 10px;
+}
+
+// ── Tab Bar ────────────────────────────────────────────────────────────────
+
+.ch-tabbar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 14px 18px;
+  background: rgba(251, 248, 243, 0.93);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 1px solid var(--ch-line);
+  z-index: 5;
+}
+
+.ch-tab {
+  background: none;
+  border: none;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 6px 10px;
+  color: var(--ch-ink-mute);
+  font-size: 10px;
+  font-weight: 500;
+  font-family: var(--ch-sans);
+  cursor: pointer;
+  position: relative;
+
+  &.active { color: var(--ch-ink); }
+}
+
+.ch-tab-dot {
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: transparent;
+  margin-top: 2px;
+
+  .ch-tab.active & { background: var(--ch-ink); }
+}
+
+// ── Photo placeholder ──────────────────────────────────────────────────────
+
+.ch-photo {
+  background: var(--ch-cream-2);
+  border-radius: var(--ch-r-sm);
+  position: relative;
+  overflow: hidden;
+}
+
+// ── Grain ──────────────────────────────────────────────────────────────────
+
+.ch-grain::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.4;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence baseFrequency='0.9' numOctaves='2'/><feColorMatrix values='0 0 0 0 0.55  0 0 0 0 0.45  0 0 0 0 0.35  0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  mix-blend-mode: multiply;
+}
+
+// ── Animations ─────────────────────────────────────────────────────────────
+
+@keyframes ch-spin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(1440deg); }
+}
+
+@keyframes ch-fade-out {
+  to { opacity: 0; pointer-events: none; }
+}

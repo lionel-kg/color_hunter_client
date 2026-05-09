@@ -1,0 +1,447 @@
+// LobbyPage
+
+.lobby {
+  &__nav-back {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ch-ink);
+  }
+
+  &__settings-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.15s;
+
+    &--active { color: var(--ch-ink); }
+    &--mute   { color: var(--ch-ink-mute); }
+  }
+
+  &__header {
+    padding: 20px 24px 0;
+    text-align: center;
+  }
+
+  &__title {
+    font-size: 32px;
+    line-height: 1;
+    margin: 0;
+    letter-spacing: -0.02em;
+  }
+
+  &__code-section { padding: 24px 20px 0; }
+
+  &__code-card {
+    padding: 24px;
+    text-align: center;
+    background: var(--ch-paper);
+  }
+
+  &__code-value {
+    font-size: 56px;
+    letter-spacing: 0.04em;
+    line-height: 1;
+    margin: 4px 0;
+  }
+
+  &__code-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+    margin-top: 16px;
+  }
+
+  &__copy-btn {
+    padding: 8px 14px;
+    background: var(--ch-cream-2);
+    border: none;
+    border-radius: var(--ch-r-pill);
+    font-size: 12px;
+    font-family: var(--ch-sans);
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__hunters { padding: 20px 24px 0; }
+
+  &__hunters-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__hunters-title { font-size: 13px; margin: 0; font-weight: 500; }
+  &__hunters-count { font-size: 12px; color: var(--ch-ink-mute); }
+
+  &__hunters-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__hunter-card {
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__hunter-info { flex: 1; }
+
+  &__hunter-name {
+    font-size: 13px;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  // Teams panel
+  &__teams { padding: 20px 20px 0; }
+
+  &__teams-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  &__teams-label { font-size: 12px; color: var(--ch-ink-mute); }
+
+  &__randomize-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border-radius: var(--ch-r-pill);
+    background: var(--ch-ink);
+    color: var(--ch-ivory);
+    border: none;
+    font-size: 11px;
+    font-family: var(--ch-sans);
+    cursor: pointer;
+  }
+
+  &__teams-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__team-card {
+    padding: 12px;
+  }
+
+  &__team-name {
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  &__team-empty {
+    font-size: 11px;
+    color: var(--ch-ink-mute);
+    font-style: italic;
+  }
+
+  &__team-members {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__participant-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+  }
+
+  &__participant-name { font-size: 12px; flex: 1; }
+
+  &__assign-btn {
+    background: var(--ch-cream-2);
+    border: none;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 10px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+    color: var(--ch-ink-soft);
+  }
+
+  &__assign-dropdown {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    background: var(--ch-ivory);
+    border: 1px solid var(--ch-line);
+    border-radius: 10px;
+    padding: 4px;
+    z-index: 10;
+    min-width: 110px;
+    box-shadow: var(--ch-shadow);
+  }
+
+  &__assign-option {
+    display: block;
+    width: 100%;
+    text-align: left;
+    padding: 6px 10px;
+    background: none;
+    border: none;
+    border-radius: 7px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+  }
+
+  &__assign-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 6px;
+  }
+
+  // Chat
+  &__chat { padding: 20px 20px 0; }
+  &__chat-label { font-size: 12px; color: var(--ch-ink-mute); margin-bottom: 8px; }
+
+  &__chat-card {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  &__chat-messages {
+    height: 180px;
+    overflow-y: auto;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__chat-empty {
+    font-size: 11px;
+    color: var(--ch-ink-mute);
+    font-style: italic;
+    margin: auto;
+  }
+
+  &__chat-msg {
+    display: flex;
+    flex-direction: column;
+
+    &--mine   { align-items: flex-end; }
+    &--theirs { align-items: flex-start; }
+  }
+
+  &__chat-sender {
+    font-size: 10px;
+    color: var(--ch-ink-mute);
+    margin-bottom: 2px;
+    padding-left: 4px;
+  }
+
+  &__chat-bubble {
+    max-width: 75%;
+    padding: 6px 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    word-break: break-word;
+
+    &--mine   { border-radius: 12px 12px 4px 12px; background: var(--ch-ink); color: var(--ch-ivory); }
+    &--theirs { border-radius: 12px 12px 12px 4px; background: var(--ch-cream-2); color: var(--ch-ink); }
+  }
+
+  &__chat-input-row {
+    display: flex;
+    border-top: 1px solid var(--ch-line);
+    padding: 8px 10px;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &__chat-input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    font-family: var(--ch-sans);
+    outline: none;
+    color: var(--ch-ink);
+  }
+
+  &__chat-send {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px;
+    display: flex;
+    transition: color 0.15s;
+
+    &--active { color: var(--ch-ink); }
+    &--mute   { color: var(--ch-ink-mute); cursor: default; }
+  }
+
+  // Actions footer
+  &__actions {
+    padding: 20px 20px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  &__start-btn { width: 100%; padding: 16px; }
+
+  &__colors-note {
+    font-size: 11px;
+    color: var(--ch-ink-mute);
+    text-align: center;
+    margin: 0;
+  }
+
+  &__dissolve-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    background: transparent;
+    border: none;
+    color: var(--ch-danger);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+  }
+
+  &__leave-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 14px;
+    background: transparent;
+    border: 1px solid var(--ch-line);
+    color: var(--ch-ink-mute);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+  }
+}
+
+// Settings panel (bottom sheet)
+.lobby-settings {
+  &__backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+    z-index: 200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  &__sheet {
+    width: 100%;
+    max-width: 480px;
+    max-height: 85vh;
+    overflow-y: auto;
+    border-radius: 20px 20px 0 0;
+    padding: 0;
+    background: var(--ch-ivory);
+    border: 1px solid var(--ch-line);
+  }
+
+  &__sticky-header {
+    position: sticky;
+    top: 0;
+    background: var(--ch-ivory);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--ch-line);
+  }
+
+  &__title { font-size: 18px; }
+
+  &__close-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ch-ink-mute);
+    padding: 4px;
+    display: flex;
+  }
+
+  &__body {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  &__field-label {
+    font-size: 11px;
+    color: var(--ch-ink-mute);
+    margin-bottom: 8px;
+  }
+
+  &__options-row {
+    display: flex;
+    gap: 6px;
+  }
+
+  &__option-btn {
+    flex: 1;
+    padding: 8px 6px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+    transition: background 0.15s, border-color 0.15s;
+
+    &--active   { background: var(--ch-cream-3); border: 1px solid var(--ch-ink); }
+    &--inactive { background: var(--ch-ivory); border: 1px solid var(--ch-line); }
+
+    &--text-sm { font-size: 12px; }
+    &--text-md { font-size: 13px; font-weight: 500; }
+  }
+
+  &__max-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__max-label { font-size: 11px; color: var(--ch-ink-mute); }
+  &__max-value { font-size: 20px; }
+
+  &__duration-row {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+  }
+
+  &__duration-btn {
+    padding: 6px 12px;
+    border-radius: var(--ch-r-pill);
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+    transition: background 0.15s, color 0.15s;
+
+    &--active   { background: var(--ch-ink); color: var(--ch-ivory); border: 1px solid var(--ch-ink); }
+    &--inactive { background: var(--ch-ivory); color: var(--ch-ink-soft); border: 1px solid var(--ch-line); }
+  }
+
+  &__save-btn {
+    width: 100%;
+    padding: 12px;
+    font-size: 13px;
+  }
+}

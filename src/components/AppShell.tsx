@@ -15,14 +15,7 @@ export function LangSwitch() {
   return (
     <button
       onClick={() => i18n.changeLanguage(next)}
-      style={{
-        background: 'none',
-        border: 'none',
-        padding: '2px 4px',
-        fontSize: 20,
-        cursor: 'pointer',
-        lineHeight: 1,
-      }}
+      className="lang-switch"
       aria-label="Switch language"
     >
       {current === 'fr' ? '🇬🇧' : '🇫🇷'}
@@ -34,15 +27,15 @@ export function AppShell({ children }: Props) {
   const user = useAuthStore(s => s.user);
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-      <header className="ch-topbar" style={{ position: 'sticky', top: 0, zIndex: 100 }}>
+    <div className="app-shell">
+      <header className="ch-topbar app-shell__topbar">
         <Logo size={15} />
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div className="app-shell__topbar-right">
           <LangSwitch />
           <NotificationBell />
           <Link
             to="/profile"
-            className="ch-avatar"
+            className="ch-avatar app-shell__avatar-link"
             style={{ width: 30, height: 30, textDecoration: 'none', flexShrink: 0 }}
           >
             {user?.pseudo[0]?.toUpperCase() ?? '?'}

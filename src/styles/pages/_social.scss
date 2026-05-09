@@ -1,0 +1,269 @@
+// SocialPage
+
+.social {
+  &__header {
+    padding: 14px 20px 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__title { font-size: 20px; }
+
+  &__pending-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: var(--ch-r-pill);
+    background: var(--ch-danger);
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+  }
+
+  // Section demandes reçues
+  &__requests { padding: 12px 20px 0; }
+
+  &__requests-title { margin-bottom: 10px; }
+
+  &__requests-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__request-card {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__request-info { flex: 1; min-width: 0; }
+
+  &__request-name {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  &__request-sub {
+    font-size: 11px;
+    color: var(--ch-ink-mute);
+  }
+
+  &__request-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  &__accept-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: var(--ch-sans);
+    font-weight: 600;
+    background: var(--ch-clay);
+    color: #fff;
+    border: none;
+    border-radius: var(--ch-r-pill);
+    cursor: pointer;
+  }
+
+  &__decline-btn {
+    padding: 5px 10px;
+    font-size: 11px;
+    font-family: var(--ch-sans);
+    font-weight: 600;
+    background: var(--ch-cream-2);
+    color: var(--ch-ink);
+    border: none;
+    border-radius: var(--ch-r-pill);
+    cursor: pointer;
+  }
+
+  // Section amis acceptés
+  &__friends { padding: 20px 20px 0; }
+
+  &__friends-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  &__friends-count {
+    font-size: 12px;
+    color: var(--ch-ink-mute);
+  }
+
+  &__friends-loading {
+    font-size: 13px;
+    color: var(--ch-ink-mute);
+    padding: 16px 0;
+  }
+
+  &__friends-empty {
+    padding: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--ch-ink-mute);
+  }
+
+  &__friends-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__friend-card {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    &--unread { border-left: 3px solid var(--ch-clay); }
+  }
+
+  &__friend-info { flex: 1; min-width: 0; }
+
+  &__friend-name {
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  &__friend-preview {
+    font-size: 11px;
+    color: var(--ch-clay);
+    margin-top: 2px;
+  }
+
+  &__friend-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  &__message-btn {
+    position: relative;
+    background: var(--ch-clay);
+    border: none;
+    border-radius: var(--ch-r-pill);
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__message-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 16px;
+    height: 16px;
+    border-radius: var(--ch-r-pill);
+    background: #e05a5a;
+    color: #fff;
+    font-size: 9px;
+    font-weight: 700;
+    font-family: var(--ch-sans);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 3px;
+  }
+
+  &__profile-link {
+    background: var(--ch-cream-2);
+    border: none;
+    border-radius: var(--ch-r-pill);
+    padding: 5px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--ch-ink);
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  &__remove-confirm {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  &__remove-label {
+    font-size: 11px;
+    color: var(--ch-ink-mute);
+  }
+
+  &__remove-yes {
+    background: var(--ch-danger);
+    border: none;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+  }
+
+  &__remove-no {
+    background: var(--ch-cream-2);
+    border: none;
+    border-radius: 6px;
+    padding: 3px 8px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--ch-ink);
+    cursor: pointer;
+  }
+
+  &__remove-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ch-ink-mute);
+    padding: 4px;
+    display: flex;
+  }
+
+  // Section demandes envoyées
+  &__sent { padding: 20px 20px 0; }
+
+  &__sent-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__sent-card {
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__sent-info { flex: 1; min-width: 0; }
+  &__sent-name { font-size: 13px; font-weight: 600; }
+
+  &__sent-status {
+    font-size: 11px;
+    color: var(--ch-ink-mute);
+    font-style: italic;
+  }
+
+  &__sent-cancel {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ch-ink-mute);
+    padding: 4px;
+    display: flex;
+  }
+}

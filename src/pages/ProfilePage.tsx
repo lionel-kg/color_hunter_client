@@ -51,24 +51,22 @@ export function ProfilePage() {
   return (
     <div className="ch-screen ch-app" style={{ minHeight: "100vh" }}>
       <div className="ch-scroll" style={{ paddingBottom: 100 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px' }}>
-          <Link to="/" style={{ background: "none", border: "none", cursor: "pointer" }}>
+        <div className="profile__nav">
+          <Link to="/" className="profile__nav-btn">
             <Icon name="arrowLeft" size={22} />
           </Link>
-          <Link to="/settings" style={{ background: "none", border: "none", cursor: "pointer", padding: 4 }}>
+          <Link to="/settings" className="profile__nav-btn">
             <Icon name="settings" size={20} />
           </Link>
         </div>
 
-        <div style={{ padding: "12px 24px 0", textAlign: "center" }}>
-          <div style={{ width: 88, height: 88, borderRadius: "50%", background: "linear-gradient(135deg, #C99B7E, #94A186)", margin: "0 auto 14px", border: "3px solid var(--ch-ivory)", boxShadow: "var(--ch-shadow)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "var(--ch-serif)", fontSize: 36, color: "var(--ch-ivory)" }}>
+        <div className="profile__header">
+          <div className="profile__avatar-large">
             {user.pseudo[0].toUpperCase()}
           </div>
-          <div className="ch-serif" style={{ fontSize: 26, lineHeight: 1, margin: "0 0 4px" }}>{user.pseudo}</div>
-          <div style={{ fontSize: 12, color: "var(--ch-ink-mute)" }}>
-            @{user.pseudo}{user.city ? ` · ${user.city}` : ""}
-          </div>
-          <div style={{ display: "flex", gap: 6, justifyContent: "center", marginTop: 10, flexWrap: "wrap" }}>
+          <div className="ch-serif profile__username">{user.pseudo}</div>
+          <div className="profile__handle">@{user.pseudo}{user.city ? ` · ${user.city}` : ""}</div>
+          <div className="profile__chips">
             <span className="ch-pill">
               <Icon name={user.isProfilePrivate ? "lock" : "globe"} size={11} />
               {user.isProfilePrivate ? t('profile.privateProfile') : t('profile.publicProfile')}
@@ -77,30 +75,28 @@ export function ProfilePage() {
           </div>
         </div>
 
-        <div style={{ padding: "20px 20px 0", display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+        <div className="profile__stats">
           {stats.map((s, i) => {
             const inner = (
               <>
-                <div className="ch-serif" style={{ fontSize: 22, lineHeight: 1 }}>{s.v}</div>
-                <div style={{ fontSize: 10, color: "var(--ch-ink-mute)", marginTop: 4, letterSpacing: "0.06em", textTransform: "uppercase" }}>{s.l}</div>
+                <div className="ch-serif profile__stat-value">{s.v}</div>
+                <div className="profile__stat-label">{s.l}</div>
               </>
             );
             return s.to ? (
-              <Link key={i} to={s.to} className="ch-card" style={{ padding: 12, textAlign: "center", textDecoration: "none", color: "inherit", display: "block" }}>{inner}</Link>
+              <Link key={i} to={s.to} className="ch-card profile__stat-card">{inner}</Link>
             ) : (
-              <div key={i} className="ch-card" style={{ padding: 12, textAlign: "center" }}>{inner}</div>
+              <div key={i} className="ch-card profile__stat-card">{inner}</div>
             );
           })}
         </div>
 
         {grids.length > 0 && (
-          <div style={{ padding: "24px 20px 0" }}>
-            <h3 className="ch-serif" style={{ fontSize: 22, margin: "0 0 12px", letterSpacing: "-0.01em" }}>
-              {t('profile.myGrids')}
-            </h3>
-            <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+          <div className="profile__grids">
+            <h3 className="ch-serif profile__grids-title">{t('profile.myGrids')}</h3>
+            <div className="profile__grids-list">
               {grids.map((grid) => (
-                <div key={grid.id}>
+                <div key={grid.id} className="profile__grid-item">
                   <GridCard
                     grid={{ ...grid, imageUrl: gridImgUrl(grid.imageUrl), user: { id: user!.id, pseudo: user!.pseudo, avatarUrl: user?.avatarUrl } }}
                     currentUserId={user?.id}
@@ -109,8 +105,7 @@ export function ProfilePage() {
                         <button
                           onClick={() => toggleVisibility(grid)}
                           disabled={updatingId === grid.id}
-                          className="ch-pill"
-                          style={{ cursor: "pointer", border: "none", background: "var(--ch-cream-2)", fontSize: 11, display: "flex", alignItems: "center", gap: 4, padding: "3px 8px" }}
+                          className="ch-pill profile__visibility-btn"
                         >
                           <Icon name={grid.visibility === "PUBLIC" ? "globe" : "lock"} size={11} />
                           {grid.visibility === "PUBLIC" ? t('profile.public') : t('profile.private')}
@@ -118,14 +113,14 @@ export function ProfilePage() {
                         <button
                           onClick={() => download(gridImgUrl(grid.imageUrl), "grille-color-hunt.jpg")}
                           disabled={downloading}
-                          style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ch-ink-mute)", display: "flex", padding: 4 }}
+                          className="profile__download-btn"
                         >
                           <Icon name="download" size={16} />
                         </button>
                       </div>
                     }
                     metaInfo={
-                      <span style={{ fontSize: 11, color: "var(--ch-ink-mute)" }}>
+                      <span className="profile__meta-info">
                         {grid.game?.inviteCode ?? "—"} · {grid.game?.mode === "TEAM" ? t('profile.grids') : t('dashboard.solo')} ·{" "}
                         {new Date(grid.createdAt).toLocaleDateString(locale, { day: "numeric", month: "long", year: "numeric" })}
                       </span>

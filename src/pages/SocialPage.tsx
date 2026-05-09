@@ -57,7 +57,6 @@ export function SocialPage() {
     return f.senderId === me?.id ? f.receiver : f.sender;
   }
 
-  // Trier les amis : ceux avec DMs non lus en premier
   const sortedAccepted = [...accepted].sort((a, b) => {
     const aId = friendUser(a)?.id;
     const bId = friendUser(b)?.id;
@@ -69,45 +68,33 @@ export function SocialPage() {
   return (
     <div className="ch-screen ch-app" style={{ minHeight: '100vh' }}>
       <div className="ch-scroll" style={{ paddingBottom: 100 }}>
-        <div style={{ padding: '14px 20px 6px', display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span className="ch-serif" style={{ fontSize: 20 }}>{t('social.friends')}</span>
+        <div className="social__header">
+          <span className="ch-serif social__title">{t('social.friends')}</span>
           {pendingRequests.length > 0 && (
-            <span style={{
-              display: 'inline-flex', alignItems: 'center', gap: 5,
-              padding: '3px 8px', borderRadius: 999,
-              background: 'var(--ch-danger, #e05a5a)', color: '#fff',
-              fontSize: 11, fontWeight: 700,
-            }}>
-              {pendingRequests.length}
-            </span>
+            <span className="social__pending-badge">{pendingRequests.length}</span>
           )}
         </div>
 
-        {/* Demandes reçues */}
         {pendingRequests.length > 0 && (
-          <div style={{ padding: '12px 20px 0' }}>
-            <div className="ch-eyebrow" style={{ marginBottom: 10 }}>{t('social.receivedRequests')}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="social__requests">
+            <div className="ch-eyebrow social__requests-title">{t('social.receivedRequests')}</div>
+            <div className="social__requests-list">
               {pendingRequests.map(f => (
-                <div key={f.id} className="ch-card" style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div key={f.id} className="ch-card social__request-card">
                   <Link to={`/users/${f.sender?.id}`} style={{ textDecoration: 'none', flexShrink: 0 }}>
                     <div className="ch-avatar" style={{ width: 40, height: 40 }}>
                       {f.sender?.pseudo[0]?.toUpperCase()}
                     </div>
                   </Link>
-                  <div style={{ flex: 1, minWidth: 0 }}>
+                  <div className="social__request-info">
                     <Link to={`/users/${f.sender?.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                      <div style={{ fontSize: 13, fontWeight: 600 }}>{f.sender?.pseudo}</div>
+                      <div className="social__request-name">{f.sender?.pseudo}</div>
                     </Link>
-                    <div style={{ fontSize: 11, color: 'var(--ch-ink-mute)' }}>{t('social.wantsToAdd')}</div>
+                    <div className="social__request-sub">{t('social.wantsToAdd')}</div>
                   </div>
-                  <div style={{ display: 'flex', gap: 6, flexShrink: 0 }}>
-                    <button onClick={() => acceptRequest(f)} style={actionBtn('var(--ch-clay)', '#fff')}>
-                      {t('social.accept')}
-                    </button>
-                    <button onClick={() => declineRequest(f)} style={actionBtn('var(--ch-cream-2)', 'var(--ch-ink)')}>
-                      {t('social.decline')}
-                    </button>
+                  <div className="social__request-actions">
+                    <button onClick={() => acceptRequest(f)} className="social__accept-btn">{t('social.accept')}</button>
+                    <button onClick={() => declineRequest(f)} className="social__decline-btn">{t('social.decline')}</button>
                   </div>
                 </div>
               ))}
@@ -115,79 +102,62 @@ export function SocialPage() {
           </div>
         )}
 
-        {/* Amis acceptés */}
-        <div style={{ padding: '20px 20px 0' }}>
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 10 }}>
+        <div className="social__friends">
+          <div className="social__friends-header">
             <div className="ch-eyebrow">{t('social.myFriends')}</div>
-            <span style={{ fontSize: 12, color: 'var(--ch-ink-mute)' }}>{accepted.length}</span>
+            <span className="social__friends-count">{accepted.length}</span>
           </div>
           {loading ? (
-            <div style={{ fontSize: 13, color: 'var(--ch-ink-mute)', padding: '16px 0' }}>{t('social.loading')}</div>
+            <div className="social__friends-loading">{t('social.loading')}</div>
           ) : accepted.length === 0 ? (
-            <div className="ch-card" style={{ padding: 20, textAlign: 'center', fontSize: 13, color: 'var(--ch-ink-mute)' }}>
+            <div className="ch-card social__friends-empty">
               {t('social.noFriends')}<br />
               <span style={{ fontSize: 12 }}>{t('social.noFriendsHint')}</span>
             </div>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div className="social__friends-list">
               {sortedAccepted.map(f => {
                 const friend = friendUser(f);
                 const unreadEntry = unreadMessages.find(e => e.senderId === friend?.id);
                 const unreadCount = unreadEntry?.count ?? 0;
                 return (
-                  <div key={f.id} className="ch-card" style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10, ...(unreadCount > 0 ? { borderLeft: '3px solid var(--ch-clay)' } : {}) }}>
+                  <div
+                    key={f.id}
+                    className={`ch-card social__friend-card${unreadCount > 0 ? ' social__friend-card--unread' : ''}`}
+                  >
                     <Link to={`/users/${friend?.id}`} style={{ textDecoration: 'none', flexShrink: 0 }}>
                       <div className="ch-avatar" style={{ width: 40, height: 40 }}>
                         {friend?.pseudo[0]?.toUpperCase()}
                       </div>
                     </Link>
-                    <div style={{ flex: 1, minWidth: 0 }}>
+                    <div className="social__friend-info">
                       <Link to={`/users/${friend?.id}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                        <div style={{ fontSize: 13, fontWeight: 600 }}>{friend?.pseudo}</div>
+                        <div className="social__friend-name">{friend?.pseudo}</div>
                       </Link>
                       {unreadCount > 0 && (
-                        <div style={{ fontSize: 11, color: 'var(--ch-clay)', marginTop: 2 }}>
+                        <div className="social__friend-preview">
                           {unreadEntry?.lastText?.slice(0, 30)}{(unreadEntry?.lastText?.length ?? 0) > 30 ? '…' : ''}
                         </div>
                       )}
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <button
-                        onClick={() => navigate(`/chat/${friend?.id}`)}
-                        style={{ position: 'relative', background: 'var(--ch-clay)', border: 'none', borderRadius: 999, padding: '5px 10px', fontSize: 11, fontWeight: 600, color: '#fff', cursor: 'pointer', display: 'inline-flex', alignItems: 'center', gap: 4 }}
-                      >
+                    <div className="social__friend-actions">
+                      <button onClick={() => navigate(`/chat/${friend?.id}`)} className="social__message-btn">
                         <Icon name="arrowRight" size={12} /> {t('social.message')}
                         {unreadCount > 0 && (
-                          <span style={{
-                            position: 'absolute', top: -6, right: -6,
-                            minWidth: 16, height: 16, borderRadius: 999,
-                            background: '#e05a5a', color: '#fff',
-                            fontSize: 9, fontWeight: 700, fontFamily: 'var(--ch-sans)',
-                            display: 'flex', alignItems: 'center', justifyContent: 'center',
-                            padding: '0 3px',
-                          }}>
-                            {unreadCount > 99 ? '99+' : unreadCount}
-                          </span>
+                          <span className="social__message-badge">{unreadCount > 99 ? '99+' : unreadCount}</span>
                         )}
                       </button>
-                      <Link
-                        to={`/users/${friend?.id}`}
-                        style={{ background: 'var(--ch-cream-2)', border: 'none', borderRadius: 999, padding: '5px 10px', fontSize: 11, fontWeight: 600, textDecoration: 'none', color: 'var(--ch-ink)', display: 'inline-flex', alignItems: 'center', gap: 4 }}
-                      >
+                      <Link to={`/users/${friend?.id}`} className="social__profile-link">
                         <Icon name="user" size={12} /> {t('social.profile')}
                       </Link>
                       {confirmRemoveId === f.id ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <span style={{ fontSize: 11, color: 'var(--ch-ink-mute)' }}>{t('social.remove')}</span>
-                          <button onClick={() => removeFriend(f)} style={{ background: 'var(--ch-danger, #e05a5a)', border: 'none', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, color: '#fff', cursor: 'pointer' }}>
-                            {t('social.yes')}
-                          </button>
-                          <button onClick={() => setConfirmRemoveId(null)} style={{ background: 'var(--ch-cream-2)', border: 'none', borderRadius: 6, padding: '3px 8px', fontSize: 11, fontWeight: 600, color: 'var(--ch-ink)', cursor: 'pointer' }}>
-                            {t('social.no')}
-                          </button>
+                        <div className="social__remove-confirm">
+                          <span className="social__remove-label">{t('social.remove')}</span>
+                          <button onClick={() => removeFriend(f)} className="social__remove-yes">{t('social.yes')}</button>
+                          <button onClick={() => setConfirmRemoveId(null)} className="social__remove-no">{t('social.no')}</button>
                         </div>
                       ) : (
-                        <button onClick={() => setConfirmRemoveId(f.id)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ch-ink-mute)', padding: 4, display: 'flex' }}>
+                        <button onClick={() => setConfirmRemoveId(f.id)} className="social__remove-btn">
                           <Icon name="x" size={16} />
                         </button>
                       )}
@@ -199,21 +169,20 @@ export function SocialPage() {
           )}
         </div>
 
-        {/* Demandes envoyées */}
         {sentPending.length > 0 && (
-          <div style={{ padding: '20px 20px 0' }}>
+          <div className="social__sent">
             <div className="ch-eyebrow" style={{ marginBottom: 10 }}>{t('social.sentRequests')}</div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div className="social__sent-list">
               {sentPending.map(f => (
-                <div key={f.id} className="ch-card" style={{ padding: '10px 12px', display: 'flex', alignItems: 'center', gap: 10 }}>
+                <div key={f.id} className="ch-card social__sent-card">
                   <div className="ch-avatar" style={{ width: 40, height: 40 }}>
                     {f.receiver?.pseudo[0]?.toUpperCase()}
                   </div>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 600 }}>{f.receiver?.pseudo}</div>
-                    <div style={{ fontSize: 11, color: 'var(--ch-ink-mute)', fontStyle: 'italic' }}>{t('social.pending')}</div>
+                  <div className="social__sent-info">
+                    <div className="social__sent-name">{f.receiver?.pseudo}</div>
+                    <div className="social__sent-status">{t('social.pending')}</div>
                   </div>
-                  <button onClick={() => removeFriend(f)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--ch-ink-mute)', padding: 4, display: 'flex' }}>
+                  <button onClick={() => removeFriend(f)} className="social__sent-cancel">
                     <Icon name="x" size={16} />
                   </button>
                 </div>
@@ -225,13 +194,4 @@ export function SocialPage() {
       <TabBar />
     </div>
   );
-}
-
-function actionBtn(bg: string, color: string): React.CSSProperties {
-  return {
-    padding: '5px 10px', fontSize: 11,
-    fontFamily: 'var(--ch-sans)', fontWeight: 600,
-    background: bg, color, border: 'none',
-    borderRadius: 999, cursor: 'pointer',
-  };
 }

@@ -61,84 +61,75 @@ export function SettingsPage() {
   return (
     <div className="ch-screen ch-app" style={{ minHeight: '100vh' }}>
       <div className="ch-scroll" style={{ paddingBottom: 60 }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '10px 20px' }}>
-          <Link to="/profile" style={{ background: 'none', border: 'none', cursor: 'pointer' }}>
+        <div className="settings__nav">
+          <Link to="/profile" className="settings__nav-back">
             <Icon name="arrowLeft" size={22} />
           </Link>
-          <span style={{ fontSize: 14, fontWeight: 500 }}>{t('settings.title')}</span>
+          <span className="settings__nav-title">{t('settings.title')}</span>
           <span style={{ width: 22 }} />
         </div>
 
-        <div style={{ padding: '8px 24px 16px' }}>
-          <h1 className="ch-serif" style={{ fontSize: 32, lineHeight: 1, margin: 0 }}>{t('settings.heading')}</h1>
+        <div className="settings__header">
+          <h1 className="ch-serif settings__title">{t('settings.heading')}</h1>
         </div>
 
-        <div style={{ padding: '0 20px' }}>
-          <div className="ch-card" style={{ padding: 14, display: 'flex', alignItems: 'center', gap: 12, marginBottom: 14 }}>
+        <div className="settings__body">
+          <div className="ch-card settings__identity-card">
             <div className="ch-avatar" style={{ width: 44, height: 44, fontSize: 18 }}>{me.pseudo[0].toUpperCase()}</div>
-            <div style={{ flex: 1 }}>
-              <div style={{ fontSize: 14, fontWeight: 500 }}>{me.pseudo}</div>
-              <div style={{ fontSize: 11, color: 'var(--ch-ink-mute)' }}>{me.email}</div>
+            <div className="settings__identity-info">
+              <div className="settings__identity-name">{me.pseudo}</div>
+              <div className="settings__identity-email">{me.email}</div>
             </div>
           </div>
 
-          {/* Langue */}
-          <div style={{ marginBottom: 18 }}>
-            <div className="ch-eyebrow" style={{ marginBottom: 8, padding: '0 4px' }}>{t('settings.language').toUpperCase()}</div>
+          <div className="settings__section">
+            <div className="ch-eyebrow settings__section-label">{t('settings.language').toUpperCase()}</div>
             <div className="ch-card" style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 13 }}>{t('settings.language')}</span>
               <LangSwitch />
             </div>
           </div>
 
-          {/* Confidentialité */}
-          <div style={{ marginBottom: 18 }}>
-            <div className="ch-eyebrow" style={{ marginBottom: 8, padding: '0 4px' }}>{t('settings.privacy').toUpperCase()}</div>
-            <div className="ch-card" style={{ padding: 4 }}>
-              <button onClick={togglePrivate} style={{ width: '100%', padding: '12px 14px', display: 'flex', alignItems: 'center', gap: 10, background: 'none', border: 'none', cursor: 'pointer', textAlign: 'left', fontFamily: 'var(--ch-sans)' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 13 }}>{t('settings.privateProfile')}</div>
-                  <div style={{ fontSize: 11, color: 'var(--ch-ink-mute)', marginTop: 2 }}>{t('settings.privateProfileDesc')}</div>
+          <div className="settings__section">
+            <div className="ch-eyebrow settings__section-label">{t('settings.privacy').toUpperCase()}</div>
+            <div className="ch-card settings__section-card">
+              <button onClick={togglePrivate} className="settings__toggle-row">
+                <div className="settings__toggle-text">
+                  <div className="settings__toggle-label">{t('settings.privateProfile')}</div>
+                  <div className="settings__toggle-desc">{t('settings.privateProfileDesc')}</div>
                 </div>
-                <div style={{ width: 38, height: 22, borderRadius: 999, background: me.isProfilePrivate ? 'var(--ch-ink)' : 'var(--ch-cream-3)', position: 'relative', transition: 'background 0.15s' }}>
-                  <div style={{ position: 'absolute', top: 2, left: me.isProfilePrivate ? 18 : 2, width: 18, height: 18, borderRadius: '50%', background: 'var(--ch-ivory)', transition: 'left 0.15s' }} />
+                <div className={`settings__toggle-track settings__toggle-track--${me.isProfilePrivate ? 'on' : 'off'}`}>
+                  <div className={`settings__toggle-thumb settings__toggle-thumb--${me.isProfilePrivate ? 'on' : 'off'}`} />
                 </div>
               </button>
             </div>
           </div>
 
-          {/* Compte */}
-          <div style={{ marginBottom: 18 }}>
-            <div className="ch-eyebrow" style={{ marginBottom: 8, padding: '0 4px' }}>{t('settings.account').toUpperCase()}</div>
-            <div className="ch-card" style={{ padding: 16 }}>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <div className="settings__section">
+            <div className="ch-eyebrow settings__section-label">{t('settings.account').toUpperCase()}</div>
+            <div className="ch-card settings__account-card">
+              <div className="settings__account-header">
                 <div>
-                  <div style={{ fontSize: 13, fontWeight: 500 }}>{t('settings.deletionTitle')}</div>
-                  <div style={{ fontSize: 11, color: 'var(--ch-ink-mute)', marginTop: 2 }}>{t('settings.deletionStatus')}</div>
+                  <div className="settings__account-label">{t('settings.deletionTitle')}</div>
+                  <div className="settings__account-desc">{t('settings.deletionStatus')}</div>
                 </div>
                 <StatusChip status={me.status} demandStatus={me.demandStatus} />
               </div>
-              {msg && (
-                <div style={{ background: 'var(--ch-cream-2)', borderRadius: 10, padding: '10px 12px', fontSize: 12, color: 'var(--ch-ink-soft)', lineHeight: 1.5, marginBottom: 12 }}>
-                  {msg}
-                </div>
-              )}
+              {msg && <div className="settings__message">{msg}</div>}
               {showRequestButton && (
-                <button onClick={requestDeletion} disabled={busy} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'transparent', border: '1px solid var(--ch-line-2)', color: 'var(--ch-danger)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--ch-sans)' }}>
+                <button onClick={requestDeletion} disabled={busy} className="settings__deletion-btn settings__deletion-btn--danger">
                   {t('settings.requestDeletion')}
                 </button>
               )}
               {showCancelButton && (
-                <button onClick={cancelDeletion} disabled={busy} style={{ width: '100%', padding: 12, borderRadius: 12, background: 'transparent', border: '1px solid var(--ch-line-2)', color: 'var(--ch-ink-soft)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--ch-sans)' }}>
+                <button onClick={cancelDeletion} disabled={busy} className="settings__deletion-btn settings__deletion-btn--neutral">
                   {t('settings.cancelDeletion')}
                 </button>
               )}
             </div>
           </div>
 
-          <button onClick={logout} style={{ width: '100%', padding: 14, borderRadius: 14, background: 'transparent', border: 'none', color: 'var(--ch-ink-mute)', fontSize: 13, cursor: 'pointer', fontFamily: 'var(--ch-sans)' }}>
-            {t('settings.logout')}
-          </button>
+          <button onClick={logout} className="settings__logout-btn">{t('settings.logout')}</button>
         </div>
       </div>
     </div>

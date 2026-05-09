@@ -1,0 +1,143 @@
+// SettingsPage
+
+.settings {
+  &__nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 20px;
+  }
+
+  &__nav-back {
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+
+  &__nav-title {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  &__header {
+    padding: 8px 24px 16px;
+  }
+
+  &__title {
+    font-size: 32px;
+    line-height: 1;
+    margin: 0;
+  }
+
+  &__body { padding: 0 20px; }
+
+  &__identity-card {
+    padding: 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  &__identity-info { flex: 1; }
+  &__identity-name { font-size: 14px; font-weight: 500; }
+  &__identity-email { font-size: 11px; color: var(--ch-ink-mute); }
+
+  &__section { margin-bottom: 18px; }
+
+  &__section-label {
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+
+  &__section-card { padding: 4px; }
+
+  &__toggle-row {
+    width: 100%;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    font-family: var(--ch-sans);
+  }
+
+  &__toggle-text { flex: 1; }
+  &__toggle-label { font-size: 13px; }
+  &__toggle-desc  { font-size: 11px; color: var(--ch-ink-mute); margin-top: 2px; }
+
+  &__toggle-track {
+    width: 38px;
+    height: 22px;
+    border-radius: var(--ch-r-pill);
+    position: relative;
+    transition: background 0.15s;
+
+    &--on  { background: var(--ch-ink); }
+    &--off { background: var(--ch-cream-3); }
+  }
+
+  &__toggle-thumb {
+    position: absolute;
+    top: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--ch-ivory);
+    transition: left 0.15s;
+
+    &--on  { left: 18px; }
+    &--off { left: 2px; }
+  }
+
+  &__account-card { padding: 16px; }
+
+  &__account-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+
+  &__account-label { font-size: 13px; font-weight: 500; }
+  &__account-desc  { font-size: 11px; color: var(--ch-ink-mute); margin-top: 2px; }
+
+  &__message {
+    background: var(--ch-cream-2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font-size: 12px;
+    color: var(--ch-ink-soft);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+
+  &__deletion-btn {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+    background: transparent;
+    border: 1px solid var(--ch-line-2);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+
+    &--danger  { color: var(--ch-danger); }
+    &--neutral { color: var(--ch-ink-soft); }
+  }
+
+  &__logout-btn {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    background: transparent;
+    border: none;
+    color: var(--ch-ink-mute);
+    font-size: 13px;
+    cursor: pointer;
+    font-family: var(--ch-sans);
+  }
+}

@@ -1,0 +1,35 @@
+// AppShell + LangSwitch
+
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+
+  &__topbar {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  &__topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  &__avatar-link {
+    width: 30px;
+    height: 30px;
+    text-decoration: none;
+    flex-shrink: 0;
+  }
+}
+
+.lang-switch {
+  background: none;
+  border: none;
+  padding: 2px 4px;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
