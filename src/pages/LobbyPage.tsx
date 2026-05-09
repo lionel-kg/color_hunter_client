@@ -18,7 +18,7 @@ interface ChatMsg {
 
 const TEAM_COLORS = ["#FF3B3B", "#0088FF", "#2ECC71", "#FFD600", "#7B61FF", "#FF7A00"];
 
-function TeamPanel({ game, onUpdate }: { game: Game; onUpdate: (g: Game) => void }) {
+function TeamPanel({ game, onUpdate, readOnly = false }: { game: Game; onUpdate?: (g: Game) => void; readOnly?: boolean }) {
   const { t } = useTranslation();
   const [busy, setBusy] = useState(false);
   const teamSlots: number[] = Array.from({ length: game.numTeams }, (_, i) => i);
@@ -32,6 +32,7 @@ function TeamPanel({ game, onUpdate }: { game: Game; onUpdate: (g: Game) => void
   };
 
   const assign = async (userId: string, teamIndex: number) => {
+    if (readOnly || !onUpdate) return;
     setBusy(true);
     try {
       const currentAssignments = (game.participants ?? [])
@@ -51,6 +52,7 @@ function TeamPanel({ game, onUpdate }: { game: Game; onUpdate: (g: Game) => void
   };
 
   const randomize = async () => {
+    if (readOnly || !onUpdate) return;
     setBusy(true);
     try {
       const { data } = await api.post<Game>(`/games/${game.id}/teams`, { random: true });
@@ -64,14 +66,16 @@ function TeamPanel({ game, onUpdate }: { game: Game; onUpdate: (g: Game) => void
     <div style={{ padding: "20px 20px 0" }}>
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
         <span style={{ fontSize: 12, color: "var(--ch-ink-mute)" }}>{t('lobby.teams')}</span>
-        <button
-          onClick={randomize}
-          disabled={busy}
-          style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 999, background: "var(--ch-ink)", color: "var(--ch-ivory)", border: "none", fontSize: 11, fontFamily: "var(--ch-sans)", cursor: "pointer" }}
-        >
-          <Icon name="sparkle" size={12} />
-          {t('lobby.randomize')}
-        </button>
+        {!readOnly && (
+          <button
+            onClick={randomize}
+            disabled={busy}
+            style={{ display: "flex", alignItems: "center", gap: 5, padding: "5px 12px", borderRadius: 999, background: "var(--ch-ink)", color: "var(--ch-ivory)", border: "none", fontSize: 11, fontFamily: "var(--ch-sans)", cursor: "pointer" }}
+          >
+            <Icon name="sparkle" size={12} />
+            {t('lobby.randomize')}
+          </button>
+        )}
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
@@ -95,6 +99,7 @@ function TeamPanel({ game, onUpdate }: { game: Game; onUpdate: (g: Game) => void
                       currentTeamIndex={teamIndex}
                       onAssign={(ti) => assign(p.userId, ti)}
                       busy={busy}
+                      readOnly={readOnly}
                     />
                   ))}
                 </div>
@@ -117,6 +122,7 @@ function TeamPanel({ game, onUpdate }: { game: Game; onUpdate: (g: Game) => void
                   currentTeamIndex={null}
                   onAssign={(ti) => assign(p.userId, ti)}
                   busy={busy}
+                  readOnly={readOnly}
                 />
               ))}
             </div>
@@ -133,12 +139,14 @@ function ParticipantRow({
   currentTeamIndex,
   onAssign,
   busy,
+  readOnly = false,
 }: {
   participant: GameParticipant;
   teamSlots: number[];
   currentTeamIndex: number | null;
   onAssign: (teamIndex: number) => void;
   busy: boolean;
+  readOnly?: boolean;
 }) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
@@ -150,7 +158,7 @@ function ParticipantRow({
         {participant.user.pseudo[0]?.toUpperCase()}
       </div>
       <span style={{ fontSize: 12, flex: 1 }}>{participant.user.pseudo}</span>
-      {otherSlots.length > 0 && (
+      {!readOnly && otherSlots.length > 0 && (
         <div style={{ position: "relative" }}>
           <button
             onClick={() => setOpen(o => !o)}
@@ -179,7 +187,7 @@ function ParticipantRow({
   );
 }
 
-function LobbySettingsPanel({ game, onUpdate }: { game: Game; onUpdate: (g: Game) => void }) {
+function LobbySettingsPanel({ game, onUpdate, onClose }: { game: Game; onUpdate: (g: Game) => void; onClose: () => void }) {
   const { t } = useTranslation();
   const isTeam = game.mode === "TEAM";
 
@@ -214,14 +222,20 @@ function LobbySettingsPanel({ game, onUpdate }: { game: Game; onUpdate: (g: Game
       });
       onUpdate(data);
       setSaved(true);
-      setTimeout(() => setSaved(false), 2000);
+      setTimeout(() => { setSaved(false); onClose(); }, 800);
     } catch { } finally { setBusy(false); }
   };
 
   return (
-    <div style={{ padding: "20px 20px 0" }}>
-      <div style={{ fontSize: 12, color: "var(--ch-ink-mute)", marginBottom: 12, padding: "0 4px" }}>{t('lobby.settings').toUpperCase()}</div>
-      <div className="ch-card" style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16 }}>
+    <div onClick={onClose} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 200, display: "flex", alignItems: "flex-end", justifyContent: "center" }}>
+      <div onClick={e => e.stopPropagation()} className="ch-card" style={{ width: "100%", maxWidth: 480, maxHeight: "85vh", overflowY: "auto", borderRadius: "20px 20px 0 0", padding: 0, background: "var(--ch-ivory)" }}>
+        <div style={{ position: "sticky", top: 0, background: "var(--ch-ivory)", display: "flex", alignItems: "center", justifyContent: "space-between", padding: "14px 16px", borderBottom: "1px solid var(--ch-line)" }}>
+          <span className="ch-serif" style={{ fontSize: 18 }}>{t('lobby.settings')}</span>
+          <button onClick={onClose} style={{ background: "none", border: "none", cursor: "pointer", color: "var(--ch-ink-mute)", padding: 4, display: "flex" }}>
+            <Icon name="x" size={20} />
+          </button>
+        </div>
+        <div style={{ padding: 16, display: "flex", flexDirection: "column", gap: 16 }}>
 
         {isTeam && (
           <>
@@ -287,6 +301,7 @@ function LobbySettingsPanel({ game, onUpdate }: { game: Game; onUpdate: (g: Game
         <button onClick={save} disabled={busy} className="ch-btn" style={{ width: "100%", padding: 12, fontSize: 13 }}>
           {saved ? t('lobby.settingsSaved') : busy ? "…" : t('lobby.save')}
         </button>
+        </div>
       </div>
     </div>
   );
@@ -424,12 +439,20 @@ export function LobbyPage() {
           </div>
         </div>
 
-        {isHost && isTeam && (
-          <TeamPanel game={game} onUpdate={setGame} />
+        {isTeam && (
+          <TeamPanel
+            game={game}
+            onUpdate={isHost ? setGame : undefined}
+            readOnly={!isHost}
+          />
         )}
 
         {isHost && showSettings && (
-          <LobbySettingsPanel game={game} onUpdate={setGame} />
+          <LobbySettingsPanel
+            game={game}
+            onUpdate={setGame}
+            onClose={() => setShowSettings(false)}
+          />
         )}
 
         {/* Chat temps réel — non persistant */}
