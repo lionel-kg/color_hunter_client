@@ -80,9 +80,7 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const { t } = useTranslation();
-  const { unreadCount, notifications: allNotifications, loadNotifications, markAllRead, markRead, deleteNotification } = useNotificationsStore();
-  const SOCIAL_TYPES = ['DM', 'FRIEND_REQUEST'];
-  const notifications = allNotifications.filter(n => !SOCIAL_TYPES.includes(n.type));
+  const { unreadCount, notifications, loadNotifications, markAllRead, markRead, deleteNotification } = useNotificationsStore();
 
   useEffect(() => { loadNotifications(); }, []);
 

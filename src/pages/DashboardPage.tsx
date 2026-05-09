@@ -1,12 +1,10 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { io as socketIO } from "socket.io-client";
 import { api } from "../api/client";
 import { useAuthStore } from "../stores/auth";
-import { SERVER_URL } from "../lib/config";
 import { useNotificationsStore } from "../stores/notifications";
-import type { DirectMessage, Friendship, Game } from "../types/api";
+import type { Friendship, Game } from "../types/api";
 import { TabBar } from "../components/TabBar";
 import { Icon } from "../components/Icon";
 import { useCountdown } from "../hooks/useCountdown";
@@ -60,9 +58,7 @@ export function DashboardPage() {
     pendingRequests,
     unreadMessages,
     load: loadNotifs,
-    add: addNotif,
     remove: removeNotif,
-    addUnread,
     clearUnread,
   } = useNotificationsStore();
 
@@ -74,23 +70,6 @@ export function DashboardPage() {
     loadNotifs();
   }, []);
 
-  // Socket global pour les notifs temps réel
-  const socketRef = useRef<ReturnType<typeof socketIO> | null>(null);
-  useEffect(() => {
-    if (!user) return;
-    const socket = socketIO(SERVER_URL, {
-      auth: { token: useAuthStore.getState().access },
-    });
-    socketRef.current = socket;
-    socket.on("friend:request", (f: Friendship) => addNotif(f));
-    socket.on("dm:message", (msg: DirectMessage) => {
-      if (msg.senderId !== user?.id) addUnread(msg);
-    });
-    return () => {
-      socket.disconnect();
-      socketRef.current = null;
-    };
-  }, [user?.id]);
 
   const liveGame = games.find((g) => g.status === "RUNNING");
   const lobbyGame = games.find((g) => g.status === "LOBBY");

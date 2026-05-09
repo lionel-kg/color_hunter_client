@@ -14,7 +14,7 @@ export function SocialPage() {
   const [friendships, setFriendships] = useState<Friendship[]>([]);
   const [loading, setLoading] = useState(true);
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
-  const { pendingRequests, unreadMessages, remove: removeNotif, notifications, deleteNotification } = useNotificationsStore();
+  const { pendingRequests, unreadMessages, remove: removeNotif } = useNotificationsStore();
   const { t } = useTranslation();
 
   const load = () => {
@@ -25,14 +25,6 @@ export function SocialPage() {
   };
 
   useEffect(() => { load(); }, []);
-
-  // Supprimer les notifications DM et FRIEND_REQUEST dès l'arrivée sur la page
-  useEffect(() => {
-    const SOCIAL_TYPES = ['DM', 'FRIEND_REQUEST'];
-    notifications
-      .filter(n => SOCIAL_TYPES.includes(n.type))
-      .forEach(n => deleteNotification(n.id));
-  }, []);
 
   const acceptRequest = async (f: Friendship) => {
     try {
