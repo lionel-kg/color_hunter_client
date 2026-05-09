@@ -47,6 +47,15 @@
     color: var(--ch-ink-mute);
   }
 
+  &__camera {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--ch-ink-mute);
+    margin-top: 4px;
+  }
+
   &__chips {
     display: flex;
     gap: 6px;

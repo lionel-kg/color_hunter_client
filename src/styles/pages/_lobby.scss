@@ -93,6 +93,16 @@
 
   &__hunter-info { flex: 1; }
 
+  &__hunter-camera {
+    font-size: 10px;
+    color: var(--ch-ink-mute);
+    font-family: var(--ch-mono);
+    margin-top: 2px;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+
   &__hunter-name {
     font-size: 13px;
     font-weight: 500;

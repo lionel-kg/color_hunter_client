@@ -17,6 +17,7 @@ interface PublicProfile {
   pseudo: string;
   avatarUrl: string | null;
   city: string | null;
+  cameraModel: string | null;
   isProfilePrivate: boolean;
   createdAt: string;
   friendCount: number;
@@ -57,6 +58,12 @@ export function UserProfilePage() {
           <div className="profile__handle">
             @{profile.pseudo}{profile.city ? ` · ${profile.city}` : ""}
           </div>
+          {profile.cameraModel && (
+            <div className="profile__camera">
+              <Icon name="camera" size={11} />
+              {profile.cameraModel}
+            </div>
+          )}
           <div className="profile__add-friend">
             <AddFriendButton userId={profile.id} meId={me?.id} />
           </div>
@@ -81,7 +88,7 @@ export function UserProfilePage() {
               {profile.grids.map((grid) => (
                 <GridCard
                   key={grid.id}
-                  grid={{ ...grid, imageUrl: gridImgUrl(grid.imageUrl), user: { id: profile.id, pseudo: profile.pseudo, avatarUrl: profile.avatarUrl } }}
+                  grid={{ ...grid, imageUrl: gridImgUrl(grid.imageUrl), user: { id: profile.id, pseudo: profile.pseudo, avatarUrl: profile.avatarUrl, cameraModel: profile.cameraModel } }}
                   currentUserId={me?.id}
                 />
               ))}

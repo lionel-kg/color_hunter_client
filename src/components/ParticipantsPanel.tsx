@@ -38,6 +38,12 @@ export function ParticipantsPanel({ participants, meId, creatorId, onClose }: Pr
                     <span className="ch-pill" style={{ fontSize: 9, padding: '2px 6px' }}>HÔTE</span>
                   )}
                 </div>
+                {p.user.cameraModel && (
+                  <div className="participants-panel__camera">
+                    <Icon name="camera" size={9} />
+                    {p.user.cameraModel}
+                  </div>
+                )}
               </div>
               <AddFriendButton userId={p.userId} meId={meId} />
             </div>

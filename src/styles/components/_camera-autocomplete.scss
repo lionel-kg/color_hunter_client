@@ -1,0 +1,64 @@
+// CameraAutocomplete
+
+.camera-autocomplete {
+  position: relative;
+
+  &__input-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+
+  &__icon {
+    position: absolute;
+    left: 12px;
+    color: var(--ch-ink-mute);
+    pointer-events: none;
+  }
+
+  &__input {
+    width: 100%;
+    padding-left: 36px !important;
+    padding-right: 32px !important;
+  }
+
+  &__clear {
+    position: absolute;
+    right: 10px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--ch-ink-mute);
+    display: flex;
+    align-items: center;
+    padding: 0;
+
+    &:hover { color: var(--ch-ink); }
+  }
+
+  &__dropdown {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: var(--ch-ivory);
+    border: 1px solid var(--ch-line);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: var(--ch-shadow);
+    z-index: 50;
+    list-style: none;
+    margin: 0;
+    padding: 4px 0;
+  }
+
+  &__item {
+    padding: 10px 14px;
+    font-size: 13px;
+    cursor: pointer;
+    color: var(--ch-ink);
+    transition: background 0.1s;
+
+    &:hover { background: var(--ch-cream-2); }
+  }
+}

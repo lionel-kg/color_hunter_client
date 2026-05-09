@@ -369,6 +369,12 @@ export function LobbyPage() {
                       <span className="ch-pill" style={{ fontSize: 9, padding: "2px 6px" }}>{t('lobby.host')}</span>
                     )}
                   </div>
+                  {p.user.cameraModel && (
+                    <div className="lobby__hunter-camera">
+                      <Icon name="camera" size={9} />
+                      {p.user.cameraModel}
+                    </div>
+                  )}
                 </div>
                 <AddFriendButton userId={p.userId} meId={me?.id} />
               </div>

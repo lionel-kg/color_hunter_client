@@ -66,6 +66,12 @@ export function ProfilePage() {
           </div>
           <div className="ch-serif profile__username">{user.pseudo}</div>
           <div className="profile__handle">@{user.pseudo}{user.city ? ` · ${user.city}` : ""}</div>
+          {user.cameraModel && (
+            <div className="profile__camera">
+              <Icon name="camera" size={11} />
+              {user.cameraModel}
+            </div>
+          )}
           <div className="profile__chips">
             <span className="ch-pill">
               <Icon name={user.isProfilePrivate ? "lock" : "globe"} size={11} />
@@ -98,7 +104,7 @@ export function ProfilePage() {
               {grids.map((grid) => (
                 <div key={grid.id} className="profile__grid-item">
                   <GridCard
-                    grid={{ ...grid, imageUrl: gridImgUrl(grid.imageUrl), user: { id: user!.id, pseudo: user!.pseudo, avatarUrl: user?.avatarUrl } }}
+                    grid={{ ...grid, imageUrl: gridImgUrl(grid.imageUrl), user: { id: user!.id, pseudo: user!.pseudo, avatarUrl: user?.avatarUrl, cameraModel: user?.cameraModel } }}
                     currentUserId={user?.id}
                     ownerActions={
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>

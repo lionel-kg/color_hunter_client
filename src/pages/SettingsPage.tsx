@@ -6,6 +6,7 @@ import { useAuthStore } from '../stores/auth';
 import { Icon } from '../components/Icon';
 import { StatusChip } from '../components/StatusChip';
 import { LangSwitch } from '../components/AppShell';
+import { CameraAutocomplete } from '../components/CameraAutocomplete';
 import type { User } from '../types/api';
 
 export function SettingsPage() {
@@ -14,9 +15,15 @@ export function SettingsPage() {
   const [me, setMe] = useState<User | null>(user);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
+  const [cameraModel, setCameraModel] = useState(user?.cameraModel ?? "");
+  const [cameraSaved, setCameraSaved] = useState(false);
 
   useEffect(() => {
-    api.get<User>('/users/me').then(r => { setMe(r.data); setUser(r.data); }).catch(() => {});
+    api.get<User>('/users/me').then(r => {
+      setMe(r.data);
+      setUser(r.data);
+      setCameraModel(r.data.cameraModel ?? "");
+    }).catch(() => {});
   }, [setUser]);
 
   const togglePrivate = async () => {
@@ -25,6 +32,15 @@ export function SettingsPage() {
     const { data } = await api.patch<User>('/users/me', { isProfilePrivate: updated });
     setMe({ ...me, ...data });
     setUser({ ...me, ...data });
+  };
+
+  const saveCamera = async () => {
+    if (!me) return;
+    const { data } = await api.patch<User>('/users/me', { cameraModel: cameraModel || null });
+    setMe({ ...me, ...data });
+    setUser({ ...me, ...data });
+    setCameraSaved(true);
+    setTimeout(() => setCameraSaved(false), 2000);
   };
 
   const requestDeletion = async () => {
@@ -87,6 +103,25 @@ export function SettingsPage() {
             <div className="ch-card" style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <span style={{ fontSize: 13 }}>{t('settings.language')}</span>
               <LangSwitch />
+            </div>
+          </div>
+
+          <div className="settings__section">
+            <div className="ch-eyebrow settings__section-label">{t('settings.gear').toUpperCase()}</div>
+            <div className="ch-card settings__gear-card">
+              <div className="settings__gear-label">{t('settings.cameraModel')}</div>
+              <CameraAutocomplete
+                value={cameraModel}
+                onChange={setCameraModel}
+                placeholder={t('settings.cameraModelPlaceholder')}
+              />
+              <button
+                className={`settings__gear-save${cameraSaved ? ' settings__gear-save--saved' : ''}`}
+                onClick={saveCamera}
+                disabled={cameraSaved}
+              >
+                {cameraSaved ? t('settings.saved') : t('settings.save')}
+              </button>
             </div>
           </div>
 

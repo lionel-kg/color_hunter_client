@@ -86,6 +86,9 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
             )}
           </div>
           <span className="grid-card__pseudo">{grid.user.pseudo}</span>
+          {grid.user.cameraModel && !ownerActions && (
+            <span className="grid-card__camera">{grid.user.cameraModel}</span>
+          )}
           {ownerActions && <div className="grid-card__owner-actions">{ownerActions}</div>}
         </div>
       )}

@@ -45,6 +45,14 @@
     color: var(--ch-ink);
   }
 
+  &__camera {
+    margin-left: auto;
+    font-size: 10px;
+    color: var(--ch-ink-mute);
+    font-family: var(--ch-mono);
+    white-space: nowrap;
+  }
+
   &__owner-actions { margin-left: auto; }
 
   &__image {

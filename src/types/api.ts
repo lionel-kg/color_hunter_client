@@ -10,6 +10,7 @@ export interface User {
   isProfilePrivate?: boolean;
   city?: string | null;
   avatarUrl?: string | null;
+  cameraModel?: string | null;
 }
 
 export type GameMode = 'SOLO' | 'TEAM';
@@ -43,7 +44,7 @@ export interface GameParticipant {
   teamId: string | null;
   colorHex: string | null;
   colorName: string | null;
-  user: { id: string; pseudo: string; avatarUrl?: string | null };
+  user: { id: string; pseudo: string; avatarUrl?: string | null; cameraModel?: string | null };
   team?: Team | null;
 }
 
@@ -73,7 +74,7 @@ export interface Grid {
   createdAt: string;
   photos: GridPhoto[];
   game?: { inviteCode: string; mode: GameMode };
-  user?: { id: string; pseudo: string; avatarUrl?: string | null };
+  user?: { id: string; pseudo: string; avatarUrl?: string | null; cameraModel?: string | null };
 }
 
 export type FriendshipStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED';
