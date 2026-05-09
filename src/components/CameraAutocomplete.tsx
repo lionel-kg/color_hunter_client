@@ -51,7 +51,7 @@ export function CameraAutocomplete({ value, onChange, placeholder }: Props) {
   return (
     <div className="camera-autocomplete" ref={ref}>
       <div className="camera-autocomplete__input-wrap">
-        <Icon name="camera" size={15} className="camera-autocomplete__icon" />
+        <span className="camera-autocomplete__icon"><Icon name="camera" size={15} /></span>
         <input
           className="ch-input camera-autocomplete__input"
           type="text"
