@@ -55,7 +55,11 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
       const { data } = await api.get<{ notifications: Notification[]; unreadCount: number }>(
         '/notifications',
       );
-      set({ notifications: data.notifications, unreadCount: data.unreadCount });
+      const SOCIAL_TYPES = ['DM', 'FRIEND_REQUEST'];
+      const unreadCount = data.notifications.filter(
+        n => !n.readAt && !SOCIAL_TYPES.includes(n.type),
+      ).length;
+      set({ notifications: data.notifications, unreadCount });
     } catch {
       // ignore
     }
@@ -76,12 +80,17 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
   markRead: async (id) => {
     try {
       await api.patch(`/notifications/${id}/read`);
-      set(s => ({
-        notifications: s.notifications.map(n =>
-          n.id === id ? { ...n, readAt: new Date().toISOString() } : n,
-        ),
-        unreadCount: Math.max(0, s.unreadCount - 1),
-      }));
+      set(s => {
+        const notif = s.notifications.find(n => n.id === id);
+        const SOCIAL_TYPES = ['DM', 'FRIEND_REQUEST'];
+        const shouldDecrement = notif && !notif.readAt && !SOCIAL_TYPES.includes(notif.type);
+        return {
+          notifications: s.notifications.map(n =>
+            n.id === id ? { ...n, readAt: new Date().toISOString() } : n,
+          ),
+          unreadCount: shouldDecrement ? Math.max(0, s.unreadCount - 1) : s.unreadCount,
+        };
+      });
     } catch {
       // ignore
     }
@@ -91,9 +100,11 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
     try {
       const notif = get().notifications.find(n => n.id === id);
       await api.delete(`/notifications/${id}`);
+      const SOCIAL_TYPES = ['DM', 'FRIEND_REQUEST'];
+      const shouldDecrement = notif && !notif.readAt && !SOCIAL_TYPES.includes(notif.type);
       set(s => ({
         notifications: s.notifications.filter(n => n.id !== id),
-        unreadCount: notif && !notif.readAt ? Math.max(0, s.unreadCount - 1) : s.unreadCount,
+        unreadCount: shouldDecrement ? Math.max(0, s.unreadCount - 1) : s.unreadCount,
       }));
     } catch {
       // ignore
@@ -103,7 +114,7 @@ export const useNotificationsStore = create<NotificationsState>((set, get) => ({
   addNotification: (n) =>
     set(s => ({
       notifications: [n, ...s.notifications].slice(0, 50),
-      unreadCount: s.unreadCount + 1,
+      unreadCount: n.type === 'DM' || n.type === 'FRIEND_REQUEST' ? s.unreadCount : s.unreadCount + 1,
     })),
 
   add: (f) => set(s => ({ pendingRequests: [f, ...s.pendingRequests] })),
