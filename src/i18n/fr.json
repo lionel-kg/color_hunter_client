@@ -177,6 +177,10 @@
     "social": "Amis",
     "profile": "Profil"
   },
+  "social_dm": {
+    "unread": "non lu",
+    "unread_plural": "non lus"
+  },
   "common": {
     "back": "Retour",
     "cancel": "Annuler",
