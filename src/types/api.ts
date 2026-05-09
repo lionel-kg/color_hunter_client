@@ -23,6 +23,7 @@ export interface Game {
   creatorId: string;
   mode: GameMode;
   teamSize: number;
+  numTeams: number;
   maxPlayers: number;
   durationMin: number;
   visibility: GameVisibility;

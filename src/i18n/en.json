@@ -120,7 +120,12 @@
     "publicDesc": "Visible in open hunts",
     "create": "Create the hunt",
     "days_3": "3 days",
-    "week_1": "1 week"
+    "week_1": "1 week",
+    "numTeams": "NUMBER OF TEAMS",
+    "teams_2": "2 teams",
+    "teams_3": "3 teams",
+    "teams_4": "4 teams",
+    "playersPerTeam": "players per team"
   },
   "lobby": {
     "loading": "Loading…",
@@ -132,7 +137,28 @@
     "you": "(you)",
     "host": "HOST",
     "start": "Start the hunt",
-    "colorsNote": "Colors will be drawn at launch"
+    "colorsNote": "Colors will be drawn at launch",
+    "dissolve": "Dissolve lobby",
+    "dissolveConfirm": "Dissolve the lobby? All players will be removed.",
+    "leave": "Leave lobby",
+    "leaveConfirm": "Leave this lobby permanently?",
+    "dissolved": "The lobby has been dissolved.",
+    "teams": "TEAMS",
+    "teamN": "Team {{n}}",
+    "unassigned": "Unassigned",
+    "randomize": "Random assignment",
+    "assignTo": "Move to",
+    "chat": "LOBBY CHAT",
+    "chatPlaceholder": "Message…",
+    "chatEmpty": "No messages yet…",
+    "settings": "Settings",
+    "settingsSaved": "Saved",
+    "settingsDuration": "DURATION",
+    "settingsVisibility": "VISIBILITY",
+    "settingsSize": "TEAM SIZE",
+    "settingsNumTeams": "NUMBER OF TEAMS",
+    "settingsMaxPlayers": "MAX PLAYERS",
+    "save": "Save"
   },
   "notifications": {
     "title": "Notifications",

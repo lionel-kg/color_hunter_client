@@ -120,7 +120,12 @@
     "publicDesc": "Visible dans les chasses ouvertes",
     "create": "Créer la chasse",
     "days_3": "3 jours",
-    "week_1": "1 semaine"
+    "week_1": "1 semaine",
+    "numTeams": "NOMBRE D'ÉQUIPES",
+    "teams_2": "2 équipes",
+    "teams_3": "3 équipes",
+    "teams_4": "4 équipes",
+    "playersPerTeam": "joueurs par équipe"
   },
   "lobby": {
     "loading": "Chargement…",
@@ -132,7 +137,28 @@
     "you": "(toi)",
     "host": "HÔTE",
     "start": "Démarrer la chasse",
-    "colorsNote": "Les couleurs seront tirées au lancement"
+    "colorsNote": "Les couleurs seront tirées au lancement",
+    "dissolve": "Dissoudre le lobby",
+    "dissolveConfirm": "Dissoudre le lobby ? Tous les joueurs seront renvoyés.",
+    "leave": "Quitter le lobby",
+    "leaveConfirm": "Quitter définitivement ce lobby ?",
+    "dissolved": "Le lobby a été dissous.",
+    "teams": "ÉQUIPES",
+    "teamN": "Équipe {{n}}",
+    "unassigned": "Non assignés",
+    "randomize": "Répartition aléatoire",
+    "assignTo": "Déplacer vers",
+    "chat": "CHAT DU SALON",
+    "chatPlaceholder": "Message…",
+    "chatEmpty": "Personne n'a encore écrit…",
+    "settings": "Paramètres",
+    "settingsSaved": "Sauvegardé",
+    "settingsDuration": "DURÉE",
+    "settingsVisibility": "VISIBILITÉ",
+    "settingsSize": "TAILLE D'ÉQUIPE",
+    "settingsNumTeams": "NOMBRE D'ÉQUIPES",
+    "settingsMaxPlayers": "JOUEURS MAX",
+    "save": "Enregistrer"
   },
   "notifications": {
     "title": "Notifications",

@@ -15,8 +15,11 @@ export function CreateGamePage() {
   const { t } = useTranslation();
   const [mode, setMode] = useState<"SOLO" | "TEAM">("TEAM");
   const [teamSize, setTeamSize] = useState(2);
+  const [numTeams, setNumTeams] = useState(2);
   const [duration, setDuration] = useState<{ label: string; min: number }>({ label: "24h", min: 60 * 24 });
   const [maxPlayers, setMaxPlayers] = useState(6);
+
+  const computedMaxPlayers = mode === "TEAM" ? numTeams * teamSize : maxPlayers;
   const [visibility, setVisibility] = useState<"PRIVATE" | "PUBLIC">("PRIVATE");
   const [colorPalettes, setColorPalettes] = useState<ColorPalette[]>(["PRIMARY"]);
   const [loading, setLoading] = useState(false);
@@ -31,7 +34,7 @@ export function CreateGamePage() {
   const submit = async () => {
     setLoading(true);
     try {
-      const { data } = await api.post("/games", { mode, teamSize, durationMin: duration.min, maxPlayers, visibility, colorPalettes });
+      const { data } = await api.post("/games", { mode, teamSize, numTeams, durationMin: duration.min, maxPlayers: computedMaxPlayers, visibility, colorPalettes });
       navigate(`/games/${data.id}/lobby`);
     } finally { setLoading(false); }
   };
@@ -56,7 +59,6 @@ export function CreateGamePage() {
   ];
 
   const teamSizes = [
-    { v: 1, label: "1 vs 1", sub: t('createGame.duel') },
     { v: 2, label: t('createGame.duos'), sub: t('createGame.duosGrid') },
     { v: 3, label: t('createGame.trios'), sub: t('createGame.triosGrid') },
   ];
@@ -102,21 +104,36 @@ export function CreateGamePage() {
             </div>
           </div>
 
-          {/* Taille équipe */}
+          {/* Taille équipe + Nombre d'équipes */}
           {mode === "TEAM" && (
-            <div>
-              <div style={{ fontSize: 12, color: "var(--ch-ink-mute)", marginBottom: 8, padding: "0 4px" }}>
-                {t('createGame.teamSize')}
+            <>
+              <div>
+                <div style={{ fontSize: 12, color: "var(--ch-ink-mute)", marginBottom: 8, padding: "0 4px" }}>
+                  {t('createGame.teamSize')}
+                </div>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+                  {teamSizes.map((o) => (
+                    <button key={o.v} onClick={() => setTeamSize(o.v)} style={{ background: teamSize === o.v ? "var(--ch-cream-3)" : "var(--ch-ivory)", border: "1px solid " + (teamSize === o.v ? "var(--ch-ink)" : "var(--ch-line)"), borderRadius: 14, padding: "12px 8px", cursor: "pointer", fontFamily: "var(--ch-sans)" }}>
+                      <div className="ch-serif" style={{ fontSize: 18 }}>{o.label}</div>
+                      <div style={{ fontSize: 10, color: "var(--ch-ink-mute)" }}>{o.sub}</div>
+                    </button>
+                  ))}
+                </div>
               </div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
-                {teamSizes.map((o) => (
-                  <button key={o.v} onClick={() => setTeamSize(o.v)} style={{ background: teamSize === o.v ? "var(--ch-cream-3)" : "var(--ch-ivory)", border: "1px solid " + (teamSize === o.v ? "var(--ch-ink)" : "var(--ch-line)"), borderRadius: 14, padding: "12px 8px", cursor: "pointer", fontFamily: "var(--ch-sans)" }}>
-                    <div className="ch-serif" style={{ fontSize: 18 }}>{o.label}</div>
-                    <div style={{ fontSize: 10, color: "var(--ch-ink-mute)" }}>{o.sub}</div>
-                  </button>
-                ))}
+              <div>
+                <div style={{ fontSize: 12, color: "var(--ch-ink-mute)", marginBottom: 8, padding: "0 4px" }}>
+                  {t('createGame.numTeams')}
+                </div>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {[2, 3, 4].map((n) => (
+                    <button key={n} onClick={() => setNumTeams(n)} style={{ flex: 1, padding: "10px 8px", borderRadius: 14, background: numTeams === n ? "var(--ch-cream-3)" : "var(--ch-ivory)", border: "1px solid " + (numTeams === n ? "var(--ch-ink)" : "var(--ch-line)"), cursor: "pointer", fontFamily: "var(--ch-sans)" }}>
+                      <div className="ch-serif" style={{ fontSize: 18 }}>{n}</div>
+                      <div style={{ fontSize: 10, color: "var(--ch-ink-mute)" }}>{t(`createGame.teams_${n}`)}</div>
+                    </button>
+                  ))}
+                </div>
               </div>
-            </div>
+            </>
           )}
 
           {/* Durée */}
@@ -164,14 +181,23 @@ export function CreateGamePage() {
 
           {/* Max joueurs */}
           <div className="ch-card" style={{ padding: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: mode === "SOLO" ? 12 : 0 }}>
               <span style={{ fontSize: 13 }}>{t('createGame.maxPlayers')}</span>
-              <span className="ch-serif" style={{ fontSize: 24 }}>{maxPlayers}</span>
+              <span className="ch-serif" style={{ fontSize: 24 }}>{computedMaxPlayers}</span>
             </div>
-            <input type="range" min={2} max={9} value={maxPlayers} onChange={(e) => setMaxPlayers(Number(e.target.value))} style={{ width: "100%" }} />
-            <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--ch-ink-mute)", marginTop: 4 }}>
-              <span>2</span><span>9</span>
-            </div>
+            {mode === "SOLO" && (
+              <>
+                <input type="range" min={2} max={20} value={maxPlayers} onChange={(e) => setMaxPlayers(Number(e.target.value))} style={{ width: "100%" }} />
+                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 10, color: "var(--ch-ink-mute)", marginTop: 4 }}>
+                  <span>2</span><span>20</span>
+                </div>
+              </>
+            )}
+            {mode === "TEAM" && (
+              <div style={{ fontSize: 11, color: "var(--ch-ink-mute)", marginTop: 4 }}>
+                {numTeams} × {teamSize} {t('createGame.playersPerTeam')}
+              </div>
+            )}
           </div>
 
           {/* Visibilité */}
