@@ -6,9 +6,12 @@ export default defineConfig({
   server: {
     port: 5173,
     proxy: {
-      "/api": { target: "http://lionelkg.com:4000", changeOrigin: true },
+      "/api": {
+        target: "https://color-hunt.lionelkg.com/api",
+        changeOrigin: true,
+      },
       "/socket.io": {
-        target: "http://lionelkg.com:4000",
+        target: "https://color-hunt.lionelkg.com/api",
         ws: true,
         changeOrigin: true,
       },

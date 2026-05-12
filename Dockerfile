@@ -4,7 +4,7 @@ WORKDIR /app
 COPY package.json ./
 RUN npm install
 
-ARG VITE_API_URL=http://lionelkg.com:4000
+ARG VITE_API_URL=https://color-hunt.lionelkg.com/api
 ENV VITE_API_URL=$VITE_API_URL
 
 COPY . .
