@@ -6,7 +6,6 @@ RUN npm install
 
 ARG VITE_API_URL=https://color-hunt.lionelkg.com/api
 ENV VITE_API_URL=$VITE_API_URL
-
 COPY . .
 RUN npm run build
 FROM nginx:alpine
