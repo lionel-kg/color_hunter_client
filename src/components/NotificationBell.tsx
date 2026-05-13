@@ -53,7 +53,9 @@ function NotifItem({
     if (isUnread) onRead(notif.id);
     onDelete(notif.id);
     onClose();
-    navigate(url);
+    // Nonce pour forcer re-scroll/re-highlight si même notif re-cliquée
+    const sep = url.includes('?') ? '&' : '?';
+    navigate(`${url}${sep}t=${Date.now().toString(36)}`);
   }
 
   return (

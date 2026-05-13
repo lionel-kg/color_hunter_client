@@ -15,9 +15,10 @@ interface Props {
   ownerActions?: React.ReactNode;
   metaInfo?: React.ReactNode;
   highlightCommentId?: string | null;
+  highlightNonce?: string | null;
 }
 
-export function GridCard({ grid, currentUserId, ownerActions, metaInfo, highlightCommentId }: Props) {
+export function GridCard({ grid, currentUserId, ownerActions, metaInfo, highlightCommentId, highlightNonce }: Props) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [comments, setComments] = useState<GridComment[]>([]);
@@ -38,6 +39,7 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo, highligh
   }, [grid.id]);
 
   // Auto-ouvre les commentaires + scroll vers la carte si on cible un commentaire de cette grille
+  // highlightNonce permet de re-rejouer si l'utilisateur re-clique la même notif
   useEffect(() => {
     if (!highlightCommentId) return;
     (async () => {
@@ -47,13 +49,12 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo, highligh
         const totalReplies = data.reduce((s, c) => s + (c.repliesCount ?? 0), 0);
         setCommentCount(data.length + totalReplies);
         setShowComments(true);
-        // Scroll vers la grille une fois que le DOM a eu le temps de rendre
         requestAnimationFrame(() => {
           articleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
       } catch {}
     })();
-  }, [highlightCommentId, grid.id]);
+  }, [highlightCommentId, highlightNonce, grid.id]);
 
   async function toggleLike() {
     try {
@@ -198,6 +199,7 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo, highligh
               onReply={focusReply}
               onDelete={deleteComment}
               highlightCommentId={highlightCommentId ?? null}
+              highlightNonce={highlightNonce ?? null}
             />
           ))}
 
@@ -236,9 +238,10 @@ interface CommentItemProps {
   onDelete: (commentId: string, parentId?: string | null) => void;
   isReply?: boolean;
   highlightCommentId?: string | null;
+  highlightNonce?: string | null;
 }
 
-function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highlightCommentId }: CommentItemProps) {
+function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highlightCommentId, highlightNonce }: CommentItemProps) {
   const [liked, setLiked] = useState(!!comment.liked);
   const [likesCount, setLikesCount] = useState(comment.likesCount ?? 0);
   const [replies, setReplies] = useState<GridComment[]>([]);
@@ -247,7 +250,8 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highl
   const [expanded, setExpanded] = useState(false);
   const [loadingReplies, setLoadingReplies] = useState(false);
   const blockRef = useRef<HTMLDivElement>(null);
-  const isHighlighted = highlightCommentId === comment.id;
+  const isHighlightTarget = highlightCommentId === comment.id;
+  const [flashOn, setFlashOn] = useState(false);
 
   // Réponses optimistes ajoutées localement (suite à un POST réussi côté parent)
   const localReplies = (comment as GridComment & { _localReplies?: GridComment[] })._localReplies ?? [];
@@ -312,15 +316,23 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highl
     return () => {
       cancelled = true;
     };
-  }, [highlightCommentId, comment.id, isReply, totalReplies]);
+  }, [highlightCommentId, highlightNonce, comment.id, isReply, totalReplies]);
 
-  // Scroll + flash visuel sur le commentaire ciblé
+  // Scroll + flash visuel sur le commentaire ciblé (re-rejoue si nonce change)
   useEffect(() => {
-    if (!isHighlighted) return;
+    if (!isHighlightTarget) return;
     requestAnimationFrame(() => {
       blockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     });
-  }, [isHighlighted]);
+    // Toggle off→on pour redémarrer l'animation CSS si on re-clique
+    setFlashOn(false);
+    const id = requestAnimationFrame(() => setFlashOn(true));
+    const timer = window.setTimeout(() => setFlashOn(false), 2600);
+    return () => {
+      cancelAnimationFrame(id);
+      window.clearTimeout(timer);
+    };
+  }, [isHighlightTarget, highlightNonce]);
 
   function collapse() {
     setExpanded(false);
@@ -341,7 +353,7 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highl
   return (
     <div
       ref={blockRef}
-      className={`grid-card__comment-block${isReply ? ' grid-card__comment-block--reply' : ''}${isHighlighted ? ' grid-card__comment-block--highlighted' : ''}`}
+      className={`grid-card__comment-block${isReply ? ' grid-card__comment-block--reply' : ''}${flashOn ? ' grid-card__comment-block--highlighted' : ''}`}
     >
       <div className="grid-card__comment">
         <span className="grid-card__comment-pseudo">{comment.user.pseudo}</span>
@@ -378,6 +390,7 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highl
               onDelete={onDelete}
               isReply
               highlightCommentId={highlightCommentId}
+              highlightNonce={highlightNonce}
             />
           ))}
 

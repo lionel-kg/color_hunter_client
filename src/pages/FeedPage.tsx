@@ -15,6 +15,7 @@ export function FeedPage() {
   const [searchParams] = useSearchParams();
   const targetGridId = searchParams.get('grid');
   const targetCommentId = searchParams.get('comment');
+  const highlightNonce = searchParams.get('t');
   const [grids, setGrids] = useState<FeedGrid[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -57,6 +58,21 @@ export function FeedPage() {
     return () => observer.disconnect();
   }, [hasMore, loading, load, friendsOnly]);
 
+  // Si on arrive avec ?grid=… et que la grille n'est pas (encore) dans la liste, on la fetch seule et on l'épingle en tête
+  useEffect(() => {
+    if (!targetGridId) return;
+    if (grids.some(g => g.id === targetGridId)) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await api.get<FeedGrid>(`/grids/${targetGridId}`);
+        if (cancelled) return;
+        setGrids(prev => (prev.some(g => g.id === data.id) ? prev : [data, ...prev]));
+      } catch {}
+    })();
+    return () => { cancelled = true; };
+  }, [targetGridId, grids]);
+
   const filters = [
     { label: t('feed.all'), value: false },
     { label: t('feed.friends'), value: true },
@@ -88,6 +104,7 @@ export function FeedPage() {
               grid={g}
               currentUserId={me?.id}
               highlightCommentId={g.id === targetGridId ? targetCommentId : null}
+              highlightNonce={g.id === targetGridId ? highlightNonce : null}
             />
           ))}
         </div>
