@@ -342,6 +342,14 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highl
     setRepliesLoaded(0);
   }
 
+  // Quand une réponse enfant est supprimée, on la retire de notre state local
+  // (sinon GridCard ne peut pas le faire car les réponses chargées vivent ici)
+  function handleChildDelete(childId: string, _parentId?: string | null) {
+    setReplies((prev) => prev.filter((r) => r.id !== childId));
+    setRepliesLoaded((prev) => Math.max(0, prev - 1));
+    onDelete(childId, comment.id);
+  }
+
   // Toutes les réponses fusionnées : serveur + locales (sans doublons)
   const allReplies = [
     ...replies,
@@ -393,7 +401,7 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highl
               comment={r}
               currentUserId={currentUserId}
               onReply={onReply}
-              onDelete={onDelete}
+              onDelete={handleChildDelete}
               isReply
               highlightCommentId={highlightCommentId}
               highlightNonce={highlightNonce}
