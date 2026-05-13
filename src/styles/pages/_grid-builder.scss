@@ -53,12 +53,6 @@
       border: 2.5px solid var(--ch-clay);
       box-shadow: 0 0 0 3px rgba(201, 155, 126, 0.3);
     }
-
-    &--locked {
-      cursor: default;
-      background: var(--ch-cream);
-      border: 1.5px solid var(--ch-line-2);
-    }
   }
 
   &__slot-img {
@@ -95,9 +89,8 @@
     justify-content: center;
     font-size: 18px;
 
-    &--clay   { color: var(--ch-clay); }
-    &--line   { color: var(--ch-line-2); }
-    &--locked { color: var(--ch-clay); font-size: 24px; opacity: 0.55; }
+    &--clay  { color: var(--ch-clay); }
+    &--line  { color: var(--ch-line-2); }
   }
 
   // Pool de photos

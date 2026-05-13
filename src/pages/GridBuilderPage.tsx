@@ -16,15 +16,6 @@ function photoUrl(p: Photo) {
 
 type Step = "build" | "visibility" | "done";
 
-// En duo (TEAM × 2), la case centrale (index 4) reste vide : grille à 8 photos.
-const CENTER_INDEX = 4;
-function isDuo(game: Game | null) {
-  return game?.mode === "TEAM" && game?.teamSize === 2;
-}
-function slotCountFor(game: Game | null) {
-  return isDuo(game) ? 8 : 9;
-}
-
 export function GridBuilderPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
@@ -47,10 +38,6 @@ export function GridBuilderPage() {
     { kind: "pool"; photo: Photo } | { kind: "slot"; index: number } | null
   >(null);
 
-  function isLockedSlot(index: number) {
-    return isDuo(game) && index === CENTER_INDEX;
-  }
-
   function onTapPool(photo: Photo) {
     if (selected?.kind === "slot") {
       setSlots((prev) => {
@@ -65,7 +52,6 @@ export function GridBuilderPage() {
   }
 
   function onTapSlot(index: number) {
-    if (isLockedSlot(index)) return;
     if (!selected) {
       if (slots[index]) setSelected({ kind: "slot", index });
       return;
@@ -100,8 +86,7 @@ export function GridBuilderPage() {
   const poolPhotos = photos.filter((p) => !usedIds.has(p.id));
 
   const filled = slots.filter(Boolean).length;
-  const needed = slotCountFor(game);
-  const canProceed = filled === needed;
+  const canProceed = filled === 9;
 
   function onDragStartPool(photo: Photo) {
     dragSource.current = { kind: "pool", photo };
@@ -112,10 +97,6 @@ export function GridBuilderPage() {
   }
 
   function onDropSlot(targetIdx: number) {
-    if (isLockedSlot(targetIdx)) {
-      dragSource.current = null;
-      return;
-    }
     const src = dragSource.current;
     if (!src) return;
     setSlots((prev) => {
@@ -148,10 +129,7 @@ export function GridBuilderPage() {
     setSaving(true);
     setError(null);
     try {
-      // En duo, on saute le centre (slot 4) → backend reconstruit le mapping positions
-      const photoIds = slots
-        .filter((p): p is Photo => p !== null)
-        .map((p) => p.id);
+      const photoIds = slots.map((p) => p!.id);
       const { data } = await api.post<Grid>(`/grids/${id}`, {
         photoIds,
         visibility,
@@ -182,7 +160,7 @@ export function GridBuilderPage() {
           <div className="grid-builder__build">
             <div className="ch-eyebrow" style={{ marginBottom: 6 }}>COMPOSE TA GRILLE</div>
             <p className="grid-builder__build-hint">
-              Glisse tes photos dans les {needed} cases. Réorganise à volonté.
+              Glisse tes photos dans les 9 cases. Réorganise à volonté.
             </p>
 
             {selected && (
@@ -197,23 +175,17 @@ export function GridBuilderPage() {
             >
               {slots.map((photo, i) => {
                 const isSelectedSlot = selected?.kind === "slot" && selected.index === i;
-                const locked = isLockedSlot(i);
                 return (
                   <div
                     key={i}
-                    onDragOver={(e) => !locked && e.preventDefault()}
-                    onDrop={() => !locked && onDropSlot(i)}
-                    draggable={!locked && !!photo}
-                    onDragStart={() => !locked && photo && onDragStartSlot(i)}
+                    onDragOver={(e) => e.preventDefault()}
+                    onDrop={() => onDropSlot(i)}
+                    draggable={!!photo}
+                    onDragStart={() => photo && onDragStartSlot(i)}
                     onClick={() => onTapSlot(i)}
-                    className={`grid-builder__slot${!photo ? " grid-builder__slot--empty" : ""}${isSelectedSlot ? " grid-builder__slot--selected" : ""}${locked ? " grid-builder__slot--locked" : ""}`}
-                    aria-disabled={locked || undefined}
+                    className={`grid-builder__slot${!photo ? " grid-builder__slot--empty" : ""}${isSelectedSlot ? " grid-builder__slot--selected" : ""}`}
                   >
-                    {locked ? (
-                      <div className="grid-builder__slot-placeholder grid-builder__slot-placeholder--locked">
-                        ✦
-                      </div>
-                    ) : photo ? (
+                    {photo ? (
                       <>
                         <img
                           src={photoUrl(photo)}
@@ -266,7 +238,7 @@ export function GridBuilderPage() {
             </div>
 
             <div className={`grid-builder__progress grid-builder__progress--${canProceed ? "ready" : "mute"}`}>
-              {filled} / {needed} cases remplies
+              {filled} / 9 cases remplies
             </div>
 
             <button
