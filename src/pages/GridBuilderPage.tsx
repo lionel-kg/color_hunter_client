@@ -182,7 +182,7 @@ export function GridBuilderPage() {
           <div className="grid-builder__build">
             <div className="ch-eyebrow" style={{ marginBottom: 6 }}>COMPOSE TA GRILLE</div>
             <p className="grid-builder__build-hint">
-              Glisse tes photos dans les 9 cases. Réorganise à volonté.
+              Glisse tes photos dans les {needed} cases. Réorganise à volonté.
             </p>
 
             {selected && (
