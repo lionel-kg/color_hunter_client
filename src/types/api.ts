@@ -112,7 +112,16 @@ export interface GridComment {
   userId: string;
   text: string;
   createdAt: string;
+  parentCommentId?: string | null;
   user: { id: string; pseudo: string; avatarUrl?: string | null };
+  repliesCount?: number;
+  likesCount?: number;
+  liked?: boolean;
+}
+
+export interface RepliesPage {
+  total: number;
+  replies: GridComment[];
 }
 
 export type NotificationType =

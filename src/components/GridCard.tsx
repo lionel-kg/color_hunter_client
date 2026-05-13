@@ -1,11 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { api } from "../api/client";
 import { SERVER_URL } from "../lib/config";
-import type { Grid, GridComment } from "../types/api";
+import type { Grid, GridComment, RepliesPage } from "../types/api";
 
 function resolveImageUrl(url: string) {
   return url.startsWith("/") ? `${SERVER_URL}${url}` : url;
 }
+
+const REPLIES_PAGE_SIZE = 5;
 
 interface Props {
   grid: Grid;
@@ -22,6 +24,7 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
   const [showComments, setShowComments] = useState(false);
   const [commentText, setCommentText] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [replyTo, setReplyTo] = useState<{ commentId: string; pseudo: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -45,10 +48,25 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
       try {
         const { data } = await api.get<GridComment[]>(`/comments/${grid.id}`);
         setComments(data);
-        setCommentCount(data.length);
+        const totalReplies = data.reduce((s, c) => s + (c.repliesCount ?? 0), 0);
+        setCommentCount(data.length + totalReplies);
       } catch {}
     }
     setShowComments((v) => !v);
+  }
+
+  function focusReply(commentId: string, pseudo: string) {
+    setReplyTo({ commentId, pseudo });
+    setCommentText((prev) => {
+      const mention = `@${pseudo} `;
+      return prev.startsWith(mention) ? prev : mention;
+    });
+    inputRef.current?.focus();
+  }
+
+  function cancelReply() {
+    setReplyTo(null);
+    setCommentText("");
   }
 
   async function submitComment(e: React.FormEvent) {
@@ -56,8 +74,27 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
     if (!commentText.trim() || submitting) return;
     setSubmitting(true);
     try {
-      const { data } = await api.post<GridComment>(`/comments/${grid.id}`, { text: commentText.trim() });
-      setComments((prev) => [...prev, data]);
+      const body: { text: string; parentCommentId?: string } = { text: commentText.trim() };
+      if (replyTo) body.parentCommentId = replyTo.commentId;
+      const { data } = await api.post<GridComment>(`/comments/${grid.id}`, body);
+
+      if (replyTo) {
+        // Insère la nouvelle réponse dans le parent ciblé
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === replyTo.commentId
+              ? {
+                  ...c,
+                  repliesCount: (c.repliesCount ?? 0) + 1,
+                  _localReplies: [...((c as GridComment & { _localReplies?: GridComment[] })._localReplies ?? []), data],
+                } as GridComment
+              : c
+          )
+        );
+        setReplyTo(null);
+      } else {
+        setComments((prev) => [...prev, data]);
+      }
       setCommentCount((prev) => prev + 1);
       setCommentText("");
     } catch {
@@ -66,11 +103,25 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
     }
   }
 
-  async function deleteComment(commentId: string) {
+  async function deleteComment(commentId: string, parentId?: string | null) {
     try {
       await api.delete(`/comments/${commentId}`);
-      setComments((prev) => prev.filter((c) => c.id !== commentId));
-      setCommentCount((prev) => prev - 1);
+      if (parentId) {
+        setComments((prev) =>
+          prev.map((c) =>
+            c.id === parentId
+              ? {
+                  ...c,
+                  repliesCount: Math.max(0, (c.repliesCount ?? 1) - 1),
+                  _localReplies: ((c as GridComment & { _localReplies?: GridComment[] })._localReplies ?? []).filter((r) => r.id !== commentId),
+                } as GridComment
+              : c
+          )
+        );
+      } else {
+        setComments((prev) => prev.filter((c) => c.id !== commentId));
+      }
+      setCommentCount((prev) => Math.max(0, prev - 1));
     } catch {}
   }
 
@@ -120,21 +171,26 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
             <p className="grid-card__comments-empty">Aucun commentaire pour l'instant.</p>
           )}
           {comments.map((c) => (
-            <div key={c.id} className="grid-card__comment">
-              <span className="grid-card__comment-pseudo">{c.user.pseudo}</span>
-              <span className="grid-card__comment-text">{c.text}</span>
-              {currentUserId === c.userId && (
-                <button onClick={() => deleteComment(c.id)} className="grid-card__comment-delete">×</button>
-              )}
-            </div>
+            <CommentItem
+              key={c.id}
+              comment={c}
+              currentUserId={currentUserId}
+              onReply={focusReply}
+              onDelete={deleteComment}
+            />
           ))}
 
           <form onSubmit={submitComment} className="grid-card__comment-form">
+            {replyTo && (
+              <button type="button" onClick={cancelReply} className="grid-card__reply-cancel" aria-label="Annuler la réponse">
+                ×
+              </button>
+            )}
             <input
               ref={inputRef}
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Ajouter un commentaire…"
+              placeholder={replyTo ? `Répondre à ${replyTo.pseudo}…` : "Ajouter un commentaire…"}
               maxLength={500}
               className="grid-card__comment-input"
             />
@@ -149,5 +205,131 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
         </div>
       )}
     </article>
+  );
+}
+
+interface CommentItemProps {
+  comment: GridComment;
+  currentUserId?: string;
+  onReply: (commentId: string, pseudo: string) => void;
+  onDelete: (commentId: string, parentId?: string | null) => void;
+  isReply?: boolean;
+}
+
+function CommentItem({ comment, currentUserId, onReply, onDelete, isReply }: CommentItemProps) {
+  const [liked, setLiked] = useState(!!comment.liked);
+  const [likesCount, setLikesCount] = useState(comment.likesCount ?? 0);
+  const [replies, setReplies] = useState<GridComment[]>([]);
+  const [repliesLoaded, setRepliesLoaded] = useState(0); // nb chargés depuis le serveur
+  const [totalReplies, setTotalReplies] = useState(comment.repliesCount ?? 0);
+  const [expanded, setExpanded] = useState(false);
+  const [loadingReplies, setLoadingReplies] = useState(false);
+
+  // Réponses optimistes ajoutées localement (suite à un POST réussi côté parent)
+  const localReplies = (comment as GridComment & { _localReplies?: GridComment[] })._localReplies ?? [];
+
+  // Synchronise le compteur si le parent met à jour repliesCount (suppression/ajout local)
+  useEffect(() => {
+    setTotalReplies(comment.repliesCount ?? 0);
+  }, [comment.repliesCount]);
+
+  async function toggleLike() {
+    try {
+      const { data } = await api.post<{ liked: boolean; count: number }>(`/comments/${comment.id}/like`);
+      setLiked(data.liked);
+      setLikesCount(data.count);
+    } catch {}
+  }
+
+  async function loadMoreReplies() {
+    if (loadingReplies) return;
+    setLoadingReplies(true);
+    try {
+      const { data } = await api.get<RepliesPage>(
+        `/comments/${comment.id}/replies?skip=${repliesLoaded}&take=${REPLIES_PAGE_SIZE}`
+      );
+      setReplies((prev) => [...prev, ...data.replies]);
+      setRepliesLoaded((prev) => prev + data.replies.length);
+      setTotalReplies(data.total);
+      setExpanded(true);
+    } catch {
+    } finally {
+      setLoadingReplies(false);
+    }
+  }
+
+  function collapse() {
+    setExpanded(false);
+    setReplies([]);
+    setRepliesLoaded(0);
+  }
+
+  // Toutes les réponses fusionnées : serveur + locales (sans doublons)
+  const allReplies = [
+    ...replies,
+    ...localReplies.filter((r) => !replies.some((rs) => rs.id === r.id)),
+  ];
+  // Le total inclut les locales optimistes
+  const effectiveTotal = Math.max(totalReplies, allReplies.length);
+  const hasMore = repliesLoaded < totalReplies;
+  const allShown = expanded && !hasMore;
+
+  return (
+    <div className={`grid-card__comment-block${isReply ? ' grid-card__comment-block--reply' : ''}`}>
+      <div className="grid-card__comment">
+        <span className="grid-card__comment-pseudo">{comment.user.pseudo}</span>
+        <span className="grid-card__comment-text">{comment.text}</span>
+        {currentUserId === comment.userId && (
+          <button
+            onClick={() => onDelete(comment.id, comment.parentCommentId ?? null)}
+            className="grid-card__comment-delete"
+          >
+            ×
+          </button>
+        )}
+      </div>
+
+      <div className="grid-card__comment-meta">
+        <button onClick={toggleLike} className={`grid-card__comment-like${liked ? ' grid-card__comment-like--on' : ''}`}>
+          {liked ? '♥' : '♡'} {likesCount > 0 ? likesCount : ''}
+        </button>
+        {!isReply && (
+          <button onClick={() => onReply(comment.id, comment.user.pseudo)} className="grid-card__comment-reply-btn">
+            Répondre
+          </button>
+        )}
+      </div>
+
+      {!isReply && effectiveTotal > 0 && (
+        <div className="grid-card__replies">
+          {expanded && allReplies.map((r) => (
+            <CommentItem
+              key={r.id}
+              comment={r}
+              currentUserId={currentUserId}
+              onReply={onReply}
+              onDelete={onDelete}
+              isReply
+            />
+          ))}
+
+          {!expanded && (
+            <button onClick={loadMoreReplies} className="grid-card__replies-toggle" disabled={loadingReplies}>
+              Voir {effectiveTotal} réponse{effectiveTotal > 1 ? 's' : ''}
+            </button>
+          )}
+          {expanded && hasMore && (
+            <button onClick={loadMoreReplies} className="grid-card__replies-toggle" disabled={loadingReplies}>
+              Voir plus de réponses
+            </button>
+          )}
+          {expanded && allShown && effectiveTotal > REPLIES_PAGE_SIZE && (
+            <button onClick={collapse} className="grid-card__replies-toggle">
+              Réduire
+            </button>
+          )}
+        </div>
+      )}
+    </div>
   );
 }
