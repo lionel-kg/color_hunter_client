@@ -130,6 +130,7 @@ export type NotificationType =
   | 'GRID_LIKE'
   | 'GRID_COMMENT'
   | 'GRID_COMMENT_REPLY'
+  | 'GRID_COMMENT_LIKE'
   | 'GAME_STARTED'
   | 'DM';
 

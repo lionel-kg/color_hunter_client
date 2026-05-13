@@ -66,6 +66,10 @@
     "emptyAll": "No public grids yet.",
     "emptyFriends": "Your friends haven't shared any public grids yet."
   },
+  "comments": {
+    "deleteConfirm": "Delete this comment?",
+    "deleteReplyConfirm": "Delete this reply?"
+  },
   "profile": {
     "photos": "photos",
     "grids": "grids",
@@ -174,6 +178,7 @@
     "gridLike": "liked your grid",
     "gridComment": "commented on your grid",
     "gridCommentReply": "replied to your comment",
+    "gridCommentLike": "liked your comment",
     "gameStarted": "The game has started",
     "dm": "sent you a message"
   },

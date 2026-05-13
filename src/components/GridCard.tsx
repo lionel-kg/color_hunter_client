@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { api } from "../api/client";
 import { SERVER_URL } from "../lib/config";
 import type { Grid, GridComment, RepliesPage } from "../types/api";
@@ -242,6 +243,7 @@ interface CommentItemProps {
 }
 
 function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highlightCommentId, highlightNonce }: CommentItemProps) {
+  const { t } = useTranslation();
   const [liked, setLiked] = useState(!!comment.liked);
   const [likesCount, setLikesCount] = useState(comment.likesCount ?? 0);
   const [replies, setReplies] = useState<GridComment[]>([]);
@@ -360,7 +362,11 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highl
         <span className="grid-card__comment-text">{comment.text}</span>
         {currentUserId === comment.userId && (
           <button
-            onClick={() => onDelete(comment.id, comment.parentCommentId ?? null)}
+            onClick={() => {
+              const msg = isReply ? t('comments.deleteReplyConfirm') : t('comments.deleteConfirm');
+              if (!window.confirm(msg)) return;
+              onDelete(comment.id, comment.parentCommentId ?? null);
+            }}
             className="grid-card__comment-delete"
           >
             ×

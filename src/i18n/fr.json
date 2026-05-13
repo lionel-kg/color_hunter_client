@@ -66,6 +66,10 @@
     "emptyAll": "Aucune grille publique pour l'instant.",
     "emptyFriends": "Tes amis n'ont pas encore partagé de grilles publiques."
   },
+  "comments": {
+    "deleteConfirm": "Supprimer ce commentaire ?",
+    "deleteReplyConfirm": "Supprimer cette réponse ?"
+  },
   "profile": {
     "photos": "photos",
     "grids": "grilles",
@@ -174,6 +178,7 @@
     "gridLike": "a aimé ta grille",
     "gridComment": "a commenté ta grille",
     "gridCommentReply": "a répondu à ton commentaire",
+    "gridCommentLike": "a aimé ton commentaire",
     "gameStarted": "La partie a démarré",
     "dm": "t'a envoyé un message"
   },

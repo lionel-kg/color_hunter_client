@@ -11,7 +11,8 @@ function getNotifUrl(notif: Notification): string | null {
     case 'FRIEND_ACCEPTED': return '/social';
     case 'GRID_LIKE':
     case 'GRID_COMMENT':
-    case 'GRID_COMMENT_REPLY': {
+    case 'GRID_COMMENT_REPLY':
+    case 'GRID_COMMENT_LIKE': {
       if (!notif.entityId) return null;
       const [gridId, commentId] = notif.entityId.split(':');
       const params = new URLSearchParams({ grid: gridId });
@@ -43,6 +44,7 @@ function NotifItem({
     GRID_LIKE: t('notifications.gridLike'),
     GRID_COMMENT: t('notifications.gridComment'),
     GRID_COMMENT_REPLY: t('notifications.gridCommentReply'),
+    GRID_COMMENT_LIKE: t('notifications.gridCommentLike'),
     GAME_STARTED: t('notifications.gameStarted'),
     DM: t('notifications.dm'),
   };
