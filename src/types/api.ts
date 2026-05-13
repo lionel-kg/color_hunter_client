@@ -129,6 +129,7 @@ export type NotificationType =
   | 'FRIEND_ACCEPTED'
   | 'GRID_LIKE'
   | 'GRID_COMMENT'
+  | 'GRID_COMMENT_REPLY'
   | 'GAME_STARTED'
   | 'DM';
 

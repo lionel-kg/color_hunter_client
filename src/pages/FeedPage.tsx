@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { api } from '../api/client';
 import { useAuthStore } from '../stores/auth';
@@ -11,6 +12,9 @@ type FeedGrid = Grid & { _count: { comments: number; likes: number } };
 export function FeedPage() {
   const me = useAuthStore(s => s.user);
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
+  const targetGridId = searchParams.get('grid');
+  const targetCommentId = searchParams.get('comment');
   const [grids, setGrids] = useState<FeedGrid[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -78,7 +82,14 @@ export function FeedPage() {
         </div>
 
         <div className="feed__list">
-          {grids.map(g => <GridCard key={g.id} grid={g} currentUserId={me?.id} />)}
+          {grids.map(g => (
+            <GridCard
+              key={g.id}
+              grid={g}
+              currentUserId={me?.id}
+              highlightCommentId={g.id === targetGridId ? targetCommentId : null}
+            />
+          ))}
         </div>
 
         <div ref={loaderRef} className="feed__loader">

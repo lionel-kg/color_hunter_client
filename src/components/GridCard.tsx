@@ -14,9 +14,10 @@ interface Props {
   currentUserId?: string;
   ownerActions?: React.ReactNode;
   metaInfo?: React.ReactNode;
+  highlightCommentId?: string | null;
 }
 
-export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props) {
+export function GridCard({ grid, currentUserId, ownerActions, metaInfo, highlightCommentId }: Props) {
   const [liked, setLiked] = useState(false);
   const [likeCount, setLikeCount] = useState(0);
   const [comments, setComments] = useState<GridComment[]>([]);
@@ -26,6 +27,7 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
   const [submitting, setSubmitting] = useState(false);
   const [replyTo, setReplyTo] = useState<{ commentId: string; pseudo: string } | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const articleRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
     const g = grid as Grid & { _count?: { comments?: number } };
@@ -34,6 +36,24 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
       .then((r) => { setLiked(r.data.liked); setLikeCount(r.data.count); })
       .catch(() => {});
   }, [grid.id]);
+
+  // Auto-ouvre les commentaires + scroll vers la carte si on cible un commentaire de cette grille
+  useEffect(() => {
+    if (!highlightCommentId) return;
+    (async () => {
+      try {
+        const { data } = await api.get<GridComment[]>(`/comments/${grid.id}`);
+        setComments(data);
+        const totalReplies = data.reduce((s, c) => s + (c.repliesCount ?? 0), 0);
+        setCommentCount(data.length + totalReplies);
+        setShowComments(true);
+        // Scroll vers la grille une fois que le DOM a eu le temps de rendre
+        requestAnimationFrame(() => {
+          articleRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+      } catch {}
+    })();
+  }, [highlightCommentId, grid.id]);
 
   async function toggleLike() {
     try {
@@ -126,7 +146,7 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
   }
 
   return (
-    <article className="grid-card">
+    <article className="grid-card" ref={articleRef}>
       {grid.user && (
         <div className="grid-card__header">
           <div className="grid-card__avatar">
@@ -177,6 +197,7 @@ export function GridCard({ grid, currentUserId, ownerActions, metaInfo }: Props)
               currentUserId={currentUserId}
               onReply={focusReply}
               onDelete={deleteComment}
+              highlightCommentId={highlightCommentId ?? null}
             />
           ))}
 
@@ -214,9 +235,10 @@ interface CommentItemProps {
   onReply: (commentId: string, pseudo: string) => void;
   onDelete: (commentId: string, parentId?: string | null) => void;
   isReply?: boolean;
+  highlightCommentId?: string | null;
 }
 
-function CommentItem({ comment, currentUserId, onReply, onDelete, isReply }: CommentItemProps) {
+function CommentItem({ comment, currentUserId, onReply, onDelete, isReply, highlightCommentId }: CommentItemProps) {
   const [liked, setLiked] = useState(!!comment.liked);
   const [likesCount, setLikesCount] = useState(comment.likesCount ?? 0);
   const [replies, setReplies] = useState<GridComment[]>([]);
@@ -224,6 +246,8 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply }: Com
   const [totalReplies, setTotalReplies] = useState(comment.repliesCount ?? 0);
   const [expanded, setExpanded] = useState(false);
   const [loadingReplies, setLoadingReplies] = useState(false);
+  const blockRef = useRef<HTMLDivElement>(null);
+  const isHighlighted = highlightCommentId === comment.id;
 
   // Réponses optimistes ajoutées localement (suite à un POST réussi côté parent)
   const localReplies = (comment as GridComment & { _localReplies?: GridComment[] })._localReplies ?? [];
@@ -258,6 +282,46 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply }: Com
     }
   }
 
+  // Auto-expand : si la cible n'est pas ce commentaire mais peut être l'une de ses réponses,
+  // on charge toutes les pages jusqu'à la trouver (ou jusqu'à épuisement)
+  useEffect(() => {
+    if (!highlightCommentId || isReply) return;
+    if (highlightCommentId === comment.id) return; // c'est nous, rien à déplier
+    if (!totalReplies) return;
+    let cancelled = false;
+    (async () => {
+      let skip = 0;
+      const collected: GridComment[] = [];
+      while (!cancelled) {
+        const { data } = await api.get<RepliesPage>(
+          `/comments/${comment.id}/replies?skip=${skip}&take=${REPLIES_PAGE_SIZE}`
+        );
+        collected.push(...data.replies);
+        skip += data.replies.length;
+        const found = data.replies.some((r) => r.id === highlightCommentId);
+        if (found || skip >= data.total || data.replies.length === 0) {
+          if (cancelled) return;
+          setReplies(collected);
+          setRepliesLoaded(skip);
+          setTotalReplies(data.total);
+          setExpanded(true);
+          return;
+        }
+      }
+    })().catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [highlightCommentId, comment.id, isReply, totalReplies]);
+
+  // Scroll + flash visuel sur le commentaire ciblé
+  useEffect(() => {
+    if (!isHighlighted) return;
+    requestAnimationFrame(() => {
+      blockRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }, [isHighlighted]);
+
   function collapse() {
     setExpanded(false);
     setReplies([]);
@@ -275,7 +339,10 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply }: Com
   const allShown = expanded && !hasMore;
 
   return (
-    <div className={`grid-card__comment-block${isReply ? ' grid-card__comment-block--reply' : ''}`}>
+    <div
+      ref={blockRef}
+      className={`grid-card__comment-block${isReply ? ' grid-card__comment-block--reply' : ''}${isHighlighted ? ' grid-card__comment-block--highlighted' : ''}`}
+    >
       <div className="grid-card__comment">
         <span className="grid-card__comment-pseudo">{comment.user.pseudo}</span>
         <span className="grid-card__comment-text">{comment.text}</span>
@@ -310,6 +377,7 @@ function CommentItem({ comment, currentUserId, onReply, onDelete, isReply }: Com
               onReply={onReply}
               onDelete={onDelete}
               isReply
+              highlightCommentId={highlightCommentId}
             />
           ))}
 

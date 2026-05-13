@@ -173,6 +173,7 @@
     "friendAccepted": "accepted your request",
     "gridLike": "liked your grid",
     "gridComment": "commented on your grid",
+    "gridCommentReply": "replied to your comment",
     "gameStarted": "The game has started",
     "dm": "sent you a message"
   },

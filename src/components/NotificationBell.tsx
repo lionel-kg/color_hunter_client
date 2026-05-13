@@ -10,7 +10,14 @@ function getNotifUrl(notif: Notification): string | null {
     case 'FRIEND_REQUEST':
     case 'FRIEND_ACCEPTED': return '/social';
     case 'GRID_LIKE':
-    case 'GRID_COMMENT':    return notif.entityId ? `/feed` : null;
+    case 'GRID_COMMENT':
+    case 'GRID_COMMENT_REPLY': {
+      if (!notif.entityId) return null;
+      const [gridId, commentId] = notif.entityId.split(':');
+      const params = new URLSearchParams({ grid: gridId });
+      if (commentId) params.set('comment', commentId);
+      return `/feed?${params.toString()}`;
+    }
     default:                return null;
   }
 }
@@ -35,6 +42,7 @@ function NotifItem({
     FRIEND_ACCEPTED: t('notifications.friendAccepted'),
     GRID_LIKE: t('notifications.gridLike'),
     GRID_COMMENT: t('notifications.gridComment'),
+    GRID_COMMENT_REPLY: t('notifications.gridCommentReply'),
     GAME_STARTED: t('notifications.gameStarted'),
     DM: t('notifications.dm'),
   };
